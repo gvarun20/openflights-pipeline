@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-06-29",
+  "kpis": {
+    "routes": 66316,
+    "airports": 7698,
+    "airlines": 6162,
+    "equipment": 220,
+    "codeshare_routes": 14466,
+    "direct_routes": 66305
+  },
+  "top_airports": [
+    {"name": "Hartsfield Jackson Atlanta International Airport", "country": "United States", "iata": "ATL", "routes": 1826},
+    {"name": "Chicago O'Hare International Airport", "country": "United States", "iata": "ORD", "routes": 1108},
+    {"name": "Beijing Capital International Airport", "country": "China", "iata": "PEK", "routes": 1061},
+    {"name": "London Heathrow Airport", "country": "United Kingdom", "iata": "LHR", "routes": 1047},
+    {"name": "Charles de Gaulle International Airport", "country": "France", "iata": "CDG", "routes": 1041},
+    {"name": "Frankfurt am Main Airport", "country": "Germany", "iata": "FRA", "routes": 990},
+    {"name": "Los Angeles International Airport", "country": "United States", "iata": "LAX", "routes": 986},
+    {"name": "Dallas Fort Worth International Airport", "country": "United States", "iata": "DFW", "routes": 936},
+    {"name": "John F Kennedy International Airport", "country": "United States", "iata": "JFK", "routes": 911},
+    {"name": "Amsterdam Airport Schiphol", "country": "Netherlands", "iata": "AMS", "routes": 903}
+  ],
+  "routes_by_country": [
+    {"country": "United States", "routes": 12832},
+    {"country": "China", "routes": 7194},
+    {"country": "United Kingdom", "routes": 3334},
+    {"country": "Germany", "routes": 2920},
+    {"country": "Ireland", "routes": 2760},
+    {"country": "France", "routes": 2013},
+    {"country": "Russia", "routes": 1826},
+    {"country": "Canada", "routes": 1660},
+    {"country": "Japan", "routes": 1350},
+    {"country": "India", "routes": 1325},
+    {"country": "Italy", "routes": 1292},
+    {"country": "Spain", "routes": 1200},
+    {"country": "Netherlands", "routes": 1149},
+    {"country": "Turkey", "routes": 1134},
+    {"country": "Australia", "routes": 1090}
+  ],
+  "top_aircraft": [
+    {"code": "320", "name": "Airbus A320", "routes": 9091},
+    {"code": "738", "name": "Boeing 737-800", "routes": 7080},
+    {"code": "319", "name": "Airbus A319", "routes": 3393},
+    {"code": "737", "name": "Boeing 737", "routes": 2187},
+    {"code": "AT7", "name": "Aerospatiale/Alenia ATR 72", "routes": 1136},
+    {"code": "321", "name": "Airbus A321", "routes": 1135},
+    {"code": "E90", "name": "Embraer 190", "routes": 1049},
+    {"code": "333", "name": "Airbus A330-300", "routes": 884},
+    {"code": "DH4", "name": "De Havilland Canada DHC-8-400 Dash 8Q", "routes": 858},
+    {"code": "332", "name": "Airbus A330-200", "routes": 756}
+  ]
+}

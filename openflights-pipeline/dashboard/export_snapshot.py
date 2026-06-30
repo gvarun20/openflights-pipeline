@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from etl.db import connect
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = Path(__file__).resolve().parent / "demo_data.json"
 
 
@@ -86,6 +87,10 @@ def export_snapshot() -> dict:
 def main() -> int:
     snapshot = export_snapshot()
     OUTPUT.write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
+    pages_data = PROJECT_ROOT.parent / "docs" / "data.json"
+    if pages_data.parent.exists():
+        pages_data.write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
+        print(f"Wrote {pages_data}")
     print(f"Wrote {OUTPUT}")
     return 0
 

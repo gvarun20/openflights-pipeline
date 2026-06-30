@@ -16,13 +16,11 @@ OpenFlights publishes messy `.dat` files with 67k+ flight routes. This project t
 
 ---
 
-## Live demo
+## Live dashboard
 
-| Demo | How to view |
-|------|-------------|
-| **Dashboard (local)** | `cd openflights-pipeline/dashboard && py -m streamlit run app.py` |
-| **Dashboard (cloud, free)** | Deploy to [Streamlit Community Cloud](https://streamlit.io/cloud) — no credit card, GitHub login only |
-| **CI pipeline** | [GitHub Actions runs](https://github.com/gvarun20/openflights-pipeline/actions) |
+**🌐 [View live dashboard](https://gvarun20.github.io/openflights-pipeline/)** — hosted on GitHub Pages (no install needed).
+
+Hosted from the `docs/` folder. Updates automatically when `docs/data.json` is pushed.
 
 ---
 
