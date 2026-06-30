@@ -247,11 +247,17 @@ def export_snapshot() -> dict:
 
 def main() -> int:
     snapshot = export_snapshot()
-    OUTPUT.write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
-    pages_data = PROJECT_ROOT.parent / "docs" / "data.json"
-    if pages_data.parent.exists():
-        pages_data.write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
-        print(f"Wrote {pages_data}")
+    json_text = json.dumps(snapshot, indent=2)
+    OUTPUT.write_text(json_text, encoding="utf-8")
+    pages_dir = PROJECT_ROOT.parent / "docs"
+    if pages_dir.exists():
+        (pages_dir / "data.json").write_text(json_text, encoding="utf-8")
+        (pages_dir / "data.js").write_text(
+            "window.DASHBOARD_DATA = " + json.dumps(snapshot) + ";\n",
+            encoding="utf-8",
+        )
+        print(f"Wrote {pages_dir / 'data.json'}")
+        print(f"Wrote {pages_dir / 'data.js'}")
     print(f"Wrote {OUTPUT}")
     return 0
 
