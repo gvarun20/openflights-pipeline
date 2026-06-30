@@ -41,15 +41,16 @@ def export_snapshot() -> dict:
             UNION ALL
             SELECT dst_airport_id, COUNT(*) FROM fact_routes GROUP BY 1
         )
-        SELECT a.name, a.country, a.iata_code, SUM(t.cnt)::int
+        SELECT a.name, a.city, a.country, a.iata_code, SUM(t.cnt)::int
         FROM airport_traffic t
         JOIN dim_airport a ON a.airport_id = t.airport_id
-        GROUP BY a.name, a.country, a.iata_code
-        ORDER BY 4 DESC LIMIT 10
+        GROUP BY a.name, a.city, a.country, a.iata_code
+        ORDER BY 5 DESC LIMIT 10
         """
     )
     top_airports = [
-        {"name": r[0], "country": r[1], "iata": r[2], "routes": r[3]} for r in cur.fetchall()
+        {"name": r[0], "city": r[1], "country": r[2], "iata": r[3], "routes": r[4]}
+        for r in cur.fetchall()
     ]
 
     cur.execute(
@@ -101,6 +102,31 @@ def export_snapshot() -> dict:
 
     cur.execute(
         """
+        SELECT
+            LEAST(sa.country, da.country) AS country_a,
+            GREATEST(sa.country, da.country) AS country_b,
+            COUNT(*)::int
+        FROM fact_routes r
+        JOIN dim_airport sa ON sa.airport_id = r.src_airport_id
+        JOIN dim_airport da ON da.airport_id = r.dst_airport_id
+        WHERE sa.country IS NOT NULL AND da.country IS NOT NULL
+          AND sa.country <> da.country
+        GROUP BY 1, 2
+        ORDER BY 3 DESC LIMIT 10
+        """
+    )
+    top_country_corridors = [
+        {
+            "country_a": r[0],
+            "country_b": r[1],
+            "label": f"{r[0]} ↔ {r[1]}",
+            "routes": r[2],
+        }
+        for r in cur.fetchall()
+    ]
+
+    cur.execute(
+        """
         SELECT sa.country, da.country, COUNT(*)::int
         FROM fact_routes r
         JOIN dim_airport sa ON sa.airport_id = r.src_airport_id
@@ -112,7 +138,8 @@ def export_snapshot() -> dict:
         """
     )
     top_country_pairs = [
-        {"from": r[0], "to": r[1], "routes": r[2]} for r in cur.fetchall()
+        {"from": r[0], "to": r[1], "label": f"{r[0]} → {r[1]}", "routes": r[2]}
+        for r in cur.fetchall()
     ]
 
     cur.execute(
@@ -136,6 +163,53 @@ def export_snapshot() -> dict:
         }
         for r in cur.fetchall()
     ]
+
+    cur.execute(
+        """
+        SELECT a.city, a.country, a.iata_code,
+               COUNT(DISTINCT r.dst_airport_id)::int AS unique_destinations
+        FROM fact_routes r
+        JOIN dim_airport a ON a.airport_id = r.src_airport_id
+        WHERE a.city IS NOT NULL
+        GROUP BY a.city, a.country, a.iata_code
+        ORDER BY 4 DESC LIMIT 10
+        """
+    )
+    top_network_hubs = [
+        {
+            "city": r[0],
+            "country": r[1],
+            "iata": r[2],
+            "label": f"{r[0]}, {r[1]}",
+            "destinations": r[3],
+        }
+        for r in cur.fetchall()
+    ]
+
+    cur.execute(
+        """
+        SELECT stops, COUNT(*)::int FROM fact_routes GROUP BY stops ORDER BY stops
+        """
+    )
+    stops_distribution = {str(r[0]): r[1] for r in cur.fetchall()}
+
+    cur.execute(
+        """
+        SELECT
+            CASE WHEN sa.country = 'United States' AND da.country = 'United States'
+                 THEN 'US domestic'
+                 WHEN sa.country = 'United States' OR da.country = 'United States'
+                 THEN 'Involves US (intl)'
+                 ELSE 'Rest of world' END AS segment,
+            COUNT(*)::int
+        FROM fact_routes r
+        JOIN dim_airport sa ON sa.airport_id = r.src_airport_id
+        JOIN dim_airport da ON da.airport_id = r.dst_airport_id
+        WHERE sa.country IS NOT NULL AND da.country IS NOT NULL
+        GROUP BY 1
+        """
+    )
+    us_traffic = {r[0]: r[1] for r in cur.fetchall()}
 
     conn.close()
 
@@ -162,8 +236,12 @@ def export_snapshot() -> dict:
         "top_airlines": top_airlines,
         "routes_by_country": routes_by_country,
         "top_aircraft": top_aircraft,
+        "top_country_corridors": top_country_corridors,
         "top_country_pairs": top_country_pairs,
         "top_route_pairs": top_route_pairs,
+        "top_network_hubs": top_network_hubs,
+        "stops_distribution": stops_distribution,
+        "us_traffic": us_traffic,
     }
 
 

@@ -22,60 +22,70 @@
   "top_airports": [
     {
       "name": "Hartsfield Jackson Atlanta International Airport",
+      "city": "Atlanta",
       "country": "United States",
       "iata": "ATL",
       "routes": 1826
     },
     {
       "name": "Chicago O'Hare International Airport",
+      "city": "Chicago",
       "country": "United States",
       "iata": "ORD",
       "routes": 1108
     },
     {
       "name": "Beijing Capital International Airport",
+      "city": "Beijing",
       "country": "China",
       "iata": "PEK",
       "routes": 1061
     },
     {
       "name": "London Heathrow Airport",
+      "city": "London",
       "country": "United Kingdom",
       "iata": "LHR",
       "routes": 1047
     },
     {
       "name": "Charles de Gaulle International Airport",
+      "city": "Paris",
       "country": "France",
       "iata": "CDG",
       "routes": 1041
     },
     {
       "name": "Frankfurt am Main Airport",
+      "city": "Frankfurt",
       "country": "Germany",
       "iata": "FRA",
       "routes": 990
     },
     {
       "name": "Los Angeles International Airport",
+      "city": "Los Angeles",
       "country": "United States",
       "iata": "LAX",
       "routes": 986
     },
     {
       "name": "Dallas Fort Worth International Airport",
+      "city": "Dallas-Fort Worth",
       "country": "United States",
       "iata": "DFW",
       "routes": 936
     },
     {
       "name": "John F Kennedy International Airport",
+      "city": "New York",
       "country": "United States",
       "iata": "JFK",
       "routes": 911
     },
     {
       "name": "Amsterdam Airport Schiphol",
+      "city": "Amsterdam",
       "country": "Netherlands",
       "iata": "AMS",
       "routes": 903
@@ -257,55 +267,127 @@
       "routes": 756
     }
   ],
+  "top_country_corridors": [
+    {
+      "country_a": "Spain",
+      "country_b": "United Kingdom",
+      "label": "Spain \u2194 United Kingdom",
+      "routes": 1030
+    },
+    {
+      "country_a": "Mexico",
+      "country_b": "United States",
+      "label": "Mexico \u2194 United States",
+      "routes": 742
+    },
+    {
+      "country_a": "Canada",
+      "country_b": "United States",
+      "label": "Canada \u2194 United States",
+      "routes": 727
+    },
+    {
+      "country_a": "Germany",
+      "country_b": "Spain",
+      "label": "Germany \u2194 Spain",
+      "routes": 707
+    },
+    {
+      "country_a": "Germany",
+      "country_b": "Italy",
+      "label": "Germany \u2194 Italy",
+      "routes": 442
+    },
+    {
+      "country_a": "United Kingdom",
+      "country_b": "United States",
+      "label": "United Kingdom \u2194 United States",
+      "routes": 410
+    },
+    {
+      "country_a": "China",
+      "country_b": "Taiwan",
+      "label": "China \u2194 Taiwan",
+      "routes": 382
+    },
+    {
+      "country_a": "Germany",
+      "country_b": "Greece",
+      "label": "Germany \u2194 Greece",
+      "routes": 342
+    },
+    {
+      "country_a": "France",
+      "country_b": "United Kingdom",
+      "label": "France \u2194 United Kingdom",
+      "routes": 315
+    },
+    {
+      "country_a": "China",
+      "country_b": "South Korea",
+      "label": "China \u2194 South Korea",
+      "routes": 303
+    }
+  ],
   "top_country_pairs": [
     {
       "from": "United Kingdom",
       "to": "Spain",
+      "label": "United Kingdom \u2192 Spain",
       "routes": 518
     },
     {
       "from": "Spain",
       "to": "United Kingdom",
+      "label": "Spain \u2192 United Kingdom",
       "routes": 512
     },
     {
       "from": "Mexico",
       "to": "United States",
+      "label": "Mexico \u2192 United States",
       "routes": 373
     },
     {
       "from": "United States",
       "to": "Mexico",
+      "label": "United States \u2192 Mexico",
       "routes": 369
     },
     {
       "from": "United States",
       "to": "Canada",
+      "label": "United States \u2192 Canada",
       "routes": 364
     },
     {
       "from": "Canada",
       "to": "United States",
+      "label": "Canada \u2192 United States",
       "routes": 363
     },
     {
       "from": "Germany",
       "to": "Spain",
+      "label": "Germany \u2192 Spain",
       "routes": 354
     },
     {
       "from": "Spain",
       "to": "Germany",
+      "label": "Spain \u2192 Germany",
       "routes": 353
     },
     {
       "from": "Germany",
       "to": "Italy",
+      "label": "Germany \u2192 Italy",
       "routes": 221
     },
     {
       "from": "Italy",
       "to": "Germany",
+      "label": "Italy \u2192 Germany",
       "routes": 221
     }
   ],
@@ -380,5 +462,86 @@
       "to_city": "London",
       "routes": 12
     }
-  ]
+  ],
+  "top_network_hubs": [
+    {
+      "city": "Frankfurt",
+      "country": "Germany",
+      "iata": "FRA",
+      "label": "Frankfurt, Germany",
+      "destinations": 239
+    },
+    {
+      "city": "Paris",
+      "country": "France",
+      "iata": "CDG",
+      "label": "Paris, France",
+      "destinations": 237
+    },
+    {
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "iata": "AMS",
+      "label": "Amsterdam, Netherlands",
+      "destinations": 232
+    },
+    {
+      "city": "Istanbul",
+      "country": "Turkey",
+      "iata": "ISL",
+      "label": "Istanbul, Turkey",
+      "destinations": 224
+    },
+    {
+      "city": "Atlanta",
+      "country": "United States",
+      "iata": "ATL",
+      "label": "Atlanta, United States",
+      "destinations": 217
+    },
+    {
+      "city": "Chicago",
+      "country": "United States",
+      "iata": "ORD",
+      "label": "Chicago, United States",
+      "destinations": 206
+    },
+    {
+      "city": "Beijing",
+      "country": "China",
+      "iata": "PEK",
+      "label": "Beijing, China",
+      "destinations": 204
+    },
+    {
+      "city": "Munich",
+      "country": "Germany",
+      "iata": "MUC",
+      "label": "Munich, Germany",
+      "destinations": 191
+    },
+    {
+      "city": "Moscow",
+      "country": "Russia",
+      "iata": "DME",
+      "label": "Moscow, Russia",
+      "destinations": 187
+    },
+    {
+      "city": "Dallas-Fort Worth",
+      "country": "United States",
+      "iata": "DFW",
+      "label": "Dallas-Fort Worth, United States",
+      "destinations": 187
+    }
+  ],
+  "stops_distribution": {
+    "0": 66305,
+    "1": 11
+  },
+  "us_traffic": {
+    "US domestic": 10484,
+    "Rest of world": 50831,
+    "Involves US (intl)": 5001
+  }
 }
