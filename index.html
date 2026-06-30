@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OpenFlights Data Warehouse — Live Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --bg: #0e1117; --card: #1a1f2e; --border: #2d3548;
@@ -172,38 +171,27 @@
     <a href="https://github.com/gvarun20/openflights-pipeline/blob/main/DOCUMENTATION.md">Documentation</a></p>
   </footer>
 
-  <script>
-    const fmt = (n) => n.toLocaleString("en-US");
-    const trunc = (s, n) => (s && s.length > n ? s.slice(0, n - 1) + "…" : s);
+  <script src="data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script defer>
+    const fmt = (n) => Number(n).toLocaleString("en-US");
+    const trunc = (s, n) => (s && s.length > n ? s.slice(0, n - 1) + "\u2026" : s);
 
-    const hBarOpts = (tooltips) => ({
+    const hBarOpts = () => ({
       responsive: true,
       maintainAspectRatio: false,
       indexAxis: "y",
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          titleFont: { size: 13 },
-          bodyFont: { size: 12 },
-          callbacks: tooltips,
-        },
-      },
+      plugins: { legend: { display: false } },
       scales: {
         x: { ticks: { color: "#9aa4b2" }, grid: { color: "#2d3548" } },
-        y: {
-          ticks: { color: "#e2e8f0", font: { size: 11 }, autoSkip: false },
-          grid: { display: false },
-        },
+        y: { ticks: { color: "#e2e8f0", font: { size: 11 }, autoSkip: false }, grid: { display: false } },
       },
     });
 
-    const vBarOpts = (tooltips) => ({
+    const vBarOpts = () => ({
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: tooltips },
-      },
+      plugins: { legend: { display: false } },
       scales: {
         x: { ticks: { color: "#9aa4b2", maxRotation: 40, font: { size: 10 } }, grid: { color: "#2d3548" } },
         y: { ticks: { color: "#9aa4b2" }, grid: { color: "#2d3548" } },
@@ -215,6 +203,12 @@
       maintainAspectRatio: false,
       plugins: { legend: { position: "bottom", labels: { color: "#9aa4b2", padding: 12, font: { size: 11 } } } },
     };
+
+    function showError(msg) {
+      const el = document.getElementById("updated");
+      el.textContent = "Error: " + msg;
+      el.style.color = "#ef4444";
+    }
 
     function doughnut(id, labels, values, colors) {
       new Chart(document.getElementById(id), {
@@ -237,9 +231,9 @@
       const topApt = data.top_airports[0];
       const corridor = data.top_country_corridors[0];
       document.getElementById("insights").innerHTML = `
-        <li>Busiest hub: <strong>${topApt.city}, ${topApt.country}</strong> (${topApt.iata}) — ${fmt(topApt.routes)} connections.</li>
-        <li>Top airline: <strong>${data.top_airlines[0].name}</strong> — ${fmt(data.top_airlines[0].routes)} routes.</li>
-        <li>Busiest corridor: <strong>${corridor.label}</strong> — ${fmt(corridor.routes)} routes (both directions).</li>
+        <li>Busiest hub: <strong>${topApt.city}, ${topApt.country}</strong> (${topApt.iata}) \u2014 ${fmt(topApt.routes)} connections.</li>
+        <li>Top airline: <strong>${data.top_airlines[0].name}</strong> \u2014 ${fmt(data.top_airlines[0].routes)} routes.</li>
+        <li>Busiest corridor: <strong>${corridor.label}</strong> \u2014 ${fmt(corridor.routes)} routes (both directions).</li>
         <li>Largest network: <strong>${data.top_network_hubs[0].label}</strong> flies to ${fmt(data.top_network_hubs[0].destinations)} unique destinations.</li>
         <li>Most common aircraft: <strong>${data.top_aircraft[0].name}</strong> (${data.top_aircraft[0].code}).</li>`;
 
@@ -247,27 +241,17 @@
       doughnut("codeshareChart", Object.keys(data.codeshare_split), Object.values(data.codeshare_split), ["#f59e0b", "#22c55e"]);
 
       const aptLabels = data.top_airports.map((a) => `${a.city}, ${a.country}`);
-      const aptFull = data.top_airports.map((a) => `${a.name} (${a.iata})`);
       new Chart(document.getElementById("airportsChart"), {
         type: "bar",
         data: { labels: aptLabels, datasets: [{ data: data.top_airports.map((a) => a.routes), backgroundColor: "#3b82f6", borderRadius: 4 }] },
-        options: hBarOpts({
-          title: (items) => aptFull[items[0].dataIndex],
-          label: (ctx) => " Routes: " + fmt(ctx.raw),
-        }),
+        options: hBarOpts(),
       });
 
       const alLabels = data.top_airlines.map((a) => trunc(a.name, 28));
       new Chart(document.getElementById("airlinesChart"), {
         type: "bar",
         data: { labels: alLabels, datasets: [{ data: data.top_airlines.map((a) => a.routes), backgroundColor: "#8b5cf6", borderRadius: 4 }] },
-        options: hBarOpts({
-          title: (items) => data.top_airlines[items[0].dataIndex].name,
-          label: (ctx) => {
-            const a = data.top_airlines[ctx.dataIndex];
-            return ` ${a.country} · IATA ${a.iata} · ${fmt(a.routes)} routes`;
-          },
-        }),
+        options: hBarOpts(),
       });
 
       new Chart(document.getElementById("networkChart"), {
@@ -276,10 +260,7 @@
           labels: data.top_network_hubs.map((h) => h.label),
           datasets: [{ data: data.top_network_hubs.map((h) => h.destinations), backgroundColor: "#06b6d4", borderRadius: 4 }],
         },
-        options: hBarOpts({
-          title: (items) => data.top_network_hubs[items[0].dataIndex].label + " (" + data.top_network_hubs[items[0].dataIndex].iata + ")",
-          label: (ctx) => " Unique destinations: " + fmt(ctx.raw),
-        }),
+        options: hBarOpts(),
       });
 
       new Chart(document.getElementById("corridorsChart"), {
@@ -288,18 +269,15 @@
           labels: data.top_country_corridors.map((c) => c.label),
           datasets: [{ data: data.top_country_corridors.map((c) => c.routes), backgroundColor: "#14b8a6", borderRadius: 4 }],
         },
-        options: hBarOpts({
-          title: (items) => data.top_country_corridors[items[0].dataIndex].label,
-          label: (ctx) => " Total routes (both ways): " + fmt(ctx.raw),
-        }),
+        options: hBarOpts(),
       });
 
       document.querySelector("#countryPairsTable tbody").innerHTML = data.top_country_pairs
         .map((p) => `<tr><td>${p.from}</td><td>${p.to}</td><td class="num">${fmt(p.routes)}</td></tr>`).join("");
 
       document.querySelector("#routePairsTable tbody").innerHTML = data.top_route_pairs
-        .map((p) => `<tr><td><strong>${p.from_city}</strong> (${p.from_iata}) → <strong>${p.to_city}</strong> (${p.to_iata})</td>
-          <td style="color:var(--muted)">${p.from_city} → ${p.to_city}</td><td class="num">${fmt(p.routes)}</td></tr>`).join("");
+        .map((p) => `<tr><td><strong>${p.from_city}</strong> (${p.from_iata}) \u2192 <strong>${p.to_city}</strong> (${p.to_iata})</td>
+          <td style="color:var(--muted)">${p.from_city} \u2192 ${p.to_city}</td><td class="num">${fmt(p.routes)}</td></tr>`).join("");
 
       new Chart(document.getElementById("countriesChart"), {
         type: "bar",
@@ -307,7 +285,7 @@
           labels: data.routes_by_country.map((c) => c.country),
           datasets: [{ data: data.routes_by_country.map((c) => c.routes), backgroundColor: "#6366f1", borderRadius: 4 }],
         },
-        options: vBarOpts({ label: (ctx) => " " + fmt(ctx.raw) + " routes" }),
+        options: vBarOpts(),
       });
 
       doughnut("usChart", Object.keys(data.us_traffic), Object.values(data.us_traffic), ["#3b82f6", "#6366f1", "#64748b"]);
@@ -319,17 +297,33 @@
       new Chart(document.getElementById("aircraftChart"), {
         type: "bar",
         data: { labels: acLabels, datasets: [{ data: data.top_aircraft.map((a) => a.routes), backgroundColor: "#22c55e", borderRadius: 4 }] },
-        options: hBarOpts({
-          title: (items) => data.top_aircraft[items[0].dataIndex].name,
-          label: (ctx) => " Code " + data.top_aircraft[ctx.dataIndex].code + " · " + fmt(ctx.raw) + " routes",
-        }),
+        options: hBarOpts(),
       });
 
       doughnut("activeChart", ["Active airlines", "Inactive airlines"], [k.active_airlines, k.inactive_airlines], ["#22c55e", "#64748b"]);
     }
 
-    fetch("data.json").then((r) => r.json()).then(render)
-      .catch((err) => { document.getElementById("updated").textContent = "Error: " + err; });
+    async function loadData() {
+      if (window.DASHBOARD_DATA) return window.DASHBOARD_DATA;
+      const res = await fetch("data.json");
+      if (!res.ok) throw new Error("Could not load data.json (" + res.status + ")");
+      return res.json();
+    }
+
+    function boot() {
+      loadData()
+        .then((data) => {
+          if (typeof Chart === "undefined") throw new Error("Chart.js failed to load \u2014 check your network connection");
+          render(data);
+        })
+        .catch((err) => showError(err.message || String(err)));
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", boot);
+    } else {
+      boot();
+    }
   </script>
 </body>
 </html>
