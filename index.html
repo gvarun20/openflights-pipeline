@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenFlights Data Warehouse — Live Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0e1117;
+      --card: #1a1f2e;
+      --border: #2d3548;
+      --text: #f0f2f6;
+      --muted: #9aa4b2;
+      --accent: #3b82f6;
+      --green: #22c55e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    header {
+      padding: 2rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+    header p { color: var(--muted); font-size: 0.95rem; }
+    .badges { margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .badge {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .badge.live { border-color: var(--green); color: var(--green); }
+    main { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+    .kpi .label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi .value { font-size: 1.75rem; font-weight: 700; margin-top: 0.25rem; color: var(--accent); }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+    .chart-wrap { position: relative; height: 320px; }
+    .phases { list-style: none; }
+    .phases li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .phases li:last-child { border-bottom: none; }
+    .done { color: var(--green); }
+    .insight {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a1f2e 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .insight h2 { font-size: 1.1rem; margin-bottom: 0.75rem; }
+    .insight ul { margin-left: 1.25rem; color: var(--muted); font-size: 0.9rem; }
+    .insight li { margin-bottom: 0.35rem; }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    .updated { text-align: right; color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>✈️ OpenFlights Data Warehouse</h1>
+    <p>Live analytics from 66,316 flight routes — star schema, Python ETL, Docker, CI/CD</p>
+    <div class="badges">
+      <span class="badge live">● Live on GitHub Pages</span>
+      <span class="badge">PostgreSQL</span>
+      <span class="badge">Python ETL</span>
+      <span class="badge">Docker</span>
+      <span class="badge">GitHub Actions CI</span>
+    </div>
+  </header>
+
+  <main>
+    <p class="updated" id="updated">Loading data…</p>
+
+    <section class="kpis" id="kpis"></section>
+
+    <section class="insight">
+      <h2>Key insights</h2>
+      <ul id="insights"></ul>
+    </section>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Top 10 busiest airports</h2>
+        <div class="chart-wrap"><canvas id="airportsChart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Routes by airline country (top 15)</h2>
+        <div class="chart-wrap"><canvas id="countriesChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <h2>Most used aircraft types</h2>
+      <div class="chart-wrap"><canvas id="aircraftChart"></canvas></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Project pipeline status</h2>
+        <ul class="phases">
+          <li><span class="done">✅ Phase 1</span> — Star schema design + SQL analytics</li>
+          <li><span class="done">✅ Phase 2</span> — Python ETL → PostgreSQL (66k routes)</li>
+          <li><span class="done">✅ Phase 3</span> — Docker + pytest + GitHub CI (green)</li>
+          <li><span class="done">✅ Phase 4</span> — Live dashboard on GitHub Pages</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Architecture</h2>
+        <pre style="color: var(--muted); font-size: 0.8rem; white-space: pre-wrap; line-height: 1.6;">OpenFlights .dat files
+       ↓ Python ETL
+PostgreSQL star schema
+       ↓ SQL analytics
+This dashboard (GitHub Pages)</pre>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      <a href="https://github.com/gvarun20/openflights-pipeline">View source on GitHub</a>
+      &nbsp;·&nbsp; Data: <a href="https://openflights.org/data.html">OpenFlights</a>
+    </p>
+  </footer>
+
+  <script>
+    const chartDefaults = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: "#9aa4b2" }, grid: { color: "#2d3548" } },
+        y: { ticks: { color: "#9aa4b2" }, grid: { color: "#2d3548" } },
+      },
+    };
+
+    function fmt(n) {
+      return n.toLocaleString("en-US");
+    }
+
+    function render(data) {
+      const k = data.kpis;
+      document.getElementById("updated").textContent =
+        "Data snapshot: " + data.generated_at;
+
+      document.getElementById("kpis").innerHTML = [
+        ["Routes", k.routes],
+        ["Airports", k.airports],
+        ["Airlines", k.airlines],
+        ["Aircraft types", k.equipment],
+        ["Direct flights", k.direct_routes],
+        ["Codeshare routes", k.codeshare_routes],
+      ]
+        .map(
+          ([label, val]) =>
+            `<div class="kpi"><div class="label">${label}</div><div class="value">${fmt(val)}</div></div>`
+        )
+        .join("");
+
+      const top = data.top_airports[0];
+      const topPlane = data.top_aircraft[0];
+      const topCountry = data.routes_by_country[0];
+      document.getElementById("insights").innerHTML = `
+        <li><strong>${top.iata}</strong> (${top.country}) is the busiest hub with <strong>${fmt(top.routes)}</strong> routes.</li>
+        <li><strong>${topCountry.country}</strong> has the most airline routes globally (<strong>${fmt(topCountry.routes)}</strong>).</li>
+        <li><strong>${topPlane.code}</strong> (${topPlane.name}) is the most common aircraft on routes.</li>
+        <li><strong>${((k.codeshare_routes / k.routes) * 100).toFixed(1)}%</strong> of routes are codeshare agreements.</li>
+      `;
+
+      new Chart(document.getElementById("airportsChart"), {
+        type: "bar",
+        data: {
+          labels: data.top_airports.map((a) => a.iata),
+          datasets: [{
+            data: data.top_airports.map((a) => a.routes),
+            backgroundColor: "#3b82f6",
+            borderRadius: 4,
+          }],
+        },
+        options: { ...chartDefaults, indexAxis: "y" },
+      });
+
+      new Chart(document.getElementById("countriesChart"), {
+        type: "bar",
+        data: {
+          labels: data.routes_by_country.map((c) => c.country),
+          datasets: [{
+            data: data.routes_by_country.map((c) => c.routes),
+            backgroundColor: "#6366f1",
+            borderRadius: 4,
+          }],
+        },
+        options: chartDefaults,
+      });
+
+      new Chart(document.getElementById("aircraftChart"), {
+        type: "bar",
+        data: {
+          labels: data.top_aircraft.map((a) => a.code),
+          datasets: [{
+            data: data.top_aircraft.map((a) => a.routes),
+            backgroundColor: "#22c55e",
+            borderRadius: 4,
+          }],
+        },
+        options: { ...chartDefaults, indexAxis: "y" },
+      });
+    }
+
+    fetch("data.json")
+      .then((r) => r.json())
+      .then(render)
+      .catch((err) => {
+        document.getElementById("updated").textContent = "Failed to load data: " + err;
+      });
+  </script>
+</body>
+</html>
