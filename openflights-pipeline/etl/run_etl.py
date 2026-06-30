@@ -26,7 +26,7 @@ def main() -> int:
         conn = connect()
     except Exception as exc:
         print(f"Database connection failed: {exc}")
-        print("Check .env and that PostgreSQL is running (see docs/README.md).")
+        print("Check .env and that PostgreSQL is running (see DOCUMENTATION.md).")
         return 1
 
     try:

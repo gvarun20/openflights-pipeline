@@ -1,165 +1,88 @@
 # Open Flights Data Pipeline
 
 [![CI Pipeline](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml)
+[![Live Dashboard](https://img.shields.io/badge/dashboard-live-3b82f6?style=flat&logo=github)](https://gvarun20.github.io/openflights-pipeline/)
 
-> End-to-end **data engineering** project: raw OpenFlights files → star-schema warehouse → automated ETL → Docker → CI/CD → **live analytics dashboard**.
+> **66,316 flight routes** · star-schema warehouse · Python ETL · Docker · GitHub CI · live dashboard
 
-**Author:** Varun G · [GitHub](https://github.com/gvarun20/openflights-pipeline)
-
----
-
-## What this project does (30-second pitch)
-
-OpenFlights publishes messy `.dat` files with 67k+ flight routes. This project turns them into a **queryable PostgreSQL data warehouse** using a **star schema**, loads them with a **Python ETL pipeline**, packages everything in **Docker**, tests automatically with **GitHub Actions**, and visualises insights in a **Streamlit dashboard**.
-
-**Why it matters:** This mirrors how real data teams work — model → extract → transform → load → test → deploy → analyse.
+**[📊 Live Dashboard](https://gvarun20.github.io/openflights-pipeline/)** · **[📖 Full Documentation](DOCUMENTATION.md)** · **[⚙️ CI Runs](https://github.com/gvarun20/openflights-pipeline/actions)**
 
 ---
 
-## Live dashboard
+## What this project is
 
-**🌐 [View live dashboard](https://gvarun20.github.io/openflights-pipeline/)** — hosted on GitHub Pages (no install needed).
-
-**One-time setup:** GitHub → **Settings** → **Pages** → Source: **Deploy from a branch** → Branch: **`gh-pages`** → **`/ (root)`** → Save.
-
-The deploy workflow runs automatically on every push to `main`.
-
----
-
-## Key metrics (from warehouse)
-
-| Metric | Value |
-|--------|------:|
-| Flight routes loaded | **66,316** |
-| Airports | 7,698 |
-| Airlines | 6,162 |
-| Busiest hub | ATL (Atlanta) — 1,826 routes |
-| Top aircraft | Airbus A320 — 9,091 routes |
-
----
-
-## Architecture
+An end-to-end **data engineering pipeline** that transforms raw [OpenFlights](https://openflights.org/data.html) files into a PostgreSQL data warehouse and visualises insights on a **live public dashboard** — no cloud account or credit card required.
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────────┐     ┌──────────────┐
-│  .dat files │ ──► │  Python ETL  │ ──► │  PostgreSQL     │ ──► │  Streamlit   │
-│  (OpenFlights)    │  (extract/   │     │  star schema    │     │  dashboard   │
-└─────────────┘     │   transform) │     └─────────────────┘     └──────────────┘
-                    └──────────────┘              ▲
-                           ▲                      │
-                    ┌──────┴──────┐        ┌──────┴──────┐
-                    │   Docker    │        │  SQL analytics │
-                    │   compose   │        │  (CTEs, windows)│
-                    └─────────────┘        └───────────────┘
-                           ▲
-                    ┌──────┴──────┐
-                    │ GitHub Actions │  18 tests on every push
-                    └─────────────┘
+.dat files  →  Python ETL  →  PostgreSQL  →  Live dashboard
+                  ↑
+            Docker + GitHub Actions CI
 ```
-
-Full design notes: [docs/ARCHITECTURE.md](openflights-pipeline/docs/ARCHITECTURE.md)
 
 ---
 
-## Tech stack
+## Tech stack at a glance
 
 | Layer | Tools |
 |-------|-------|
-| Data source | OpenFlights `.dat` files |
-| Modelling | Star schema (fact + dimensions, SCD Type 2 ready) |
-| Database | PostgreSQL 16/18 |
+| Database | PostgreSQL 16 |
 | ETL | Python 3.11+, psycopg2 |
-| Containerisation | Docker, docker-compose |
-| Testing | pytest (18 tests), flake8 |
+| Containers | Docker, docker-compose |
+| Testing | pytest (18 tests) |
 | CI/CD | GitHub Actions |
-| Visualisation | Streamlit, pandas |
+| Dashboard | HTML + Chart.js on GitHub Pages |
+
+→ **[Complete tech stack, dependencies & setup guide](DOCUMENTATION.md)**
 
 ---
 
-## Project phases
+## Key numbers
 
-| Phase | Deliverable | Status |
-|-------|-------------|--------|
-| 1 | Star schema + SQL analytics | ✅ |
-| 2 | Python ETL → PostgreSQL | ✅ |
-| 3 | Docker + GitHub CI (green badge) | ✅ |
-| 4 | Live dashboard + portfolio polish | ✅ |
+| | |
+|---|---:|
+| Routes loaded | **66,316** |
+| Airports | 7,698 |
+| Airlines | 6,162 |
+| Busiest hub | ATL — 1,826 routes |
 
 ---
 
 ## Quick start
 
-### Run ETL (Docker — recommended)
-
+**Docker:**
 ```powershell
 cd openflights-pipeline
 docker compose up --build -d
-docker exec openflights-postgres psql -U openflights -d openflights_dw -c "SELECT COUNT(*) FROM fact_routes;"
 ```
 
-### Run ETL (local Python)
-
+**Local Python:**
 ```powershell
 cd openflights-pipeline
 py -m pip install -r requirements.txt
-# Edit .env with your PostgreSQL password
-py scripts/setup_db.py
+py scripts/setup_db.py          # after editing .env
 py -m etl.run_etl --init
 ```
 
-### Run dashboard
-
+**Tests:**
 ```powershell
-cd openflights-pipeline/dashboard
-py -m pip install -r requirements.txt
-py -m streamlit run app.py
-```
-
-Opens at http://localhost:8501 — works in **demo mode** without PostgreSQL.
-
-### Run tests
-
-```powershell
-cd openflights-pipeline
-py -m pip install -r requirements-dev.txt
 py -m pytest tests/ -v
 ```
 
 ---
 
-## Repository structure
+## Project structure
 
 ```
-├── sql/                          # Schema + analytics SQL
-├── openflights-pipeline/
-│   ├── data/                     # Raw OpenFlights files
-│   ├── etl/                      # Python ETL package
-│   ├── dashboard/                # Streamlit live dashboard
-│   ├── tests/                    # pytest suite
-│   ├── Dockerfile
-│   └── docker-compose.yml
-├── .github/workflows/ci.yml      # Automated CI
-└── README.md                     # You are here
+├── DOCUMENTATION.md       ← complete reference (start here)
+├── docs/                  ← live dashboard (GitHub Pages)
+├── sql/                   ← schema + analytics queries
+└── openflights-pipeline/
+    ├── etl/               ← Python ETL
+    ├── data/              ← OpenFlights .dat files
+    ├── tests/             ← pytest
+    ├── Dockerfile
+    └── docker-compose.yml
 ```
-
----
-
-## Skills demonstrated (for recruiters)
-
-- **Data modelling** — star schema, role-playing dimensions, SCD Type 2 design
-- **SQL** — CTEs, window functions, self-joins, EXPLAIN ANALYZE
-- **Python ETL** — parsing, validation, batch loading, FK integrity
-- **DevOps** — Docker, docker-compose, GitHub Actions CI/CD
-- **Testing** — unit tests with pytest + coverage
-- **Analytics** — interactive dashboard with real aviation insights
-
----
-
-## Documentation
-
-- [Detailed README](openflights-pipeline/docs/README.md)
-- [Architecture & design decisions](openflights-pipeline/docs/ARCHITECTURE.md)
-- [Portfolio guide (no AWS needed)](openflights-pipeline/docs/PORTFOLIO.md)
 
 ---
 
