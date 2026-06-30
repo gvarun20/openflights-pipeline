@@ -53,8 +53,9 @@ jobs:
         continue-on-error: true
 
       - name: Run pytest
-        run: pytest tests/ -v --cov=etl --cov-report=xml
+        run: python -m pytest tests/ -v --cov=etl --cov-report=xml
         env:
+          PYTHONPATH: .
           DB_HOST: localhost
           DB_PORT: 5432
           DB_NAME: openflights_dw
