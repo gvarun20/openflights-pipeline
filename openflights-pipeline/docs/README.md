@@ -1,5 +1,7 @@
 # Open Flights Data Pipeline
 
+[![CI Pipeline](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml)
+
 ## Project Overview
 A data warehouse for Open Flights data with a star schema design.
 
@@ -42,5 +44,124 @@ See `sql/queries.sql` for:
 - Data quality checks (missing sources)
 - EXPLAIN ANALYZE results
 
-## Next Steps (Phase 2)
-Python ETL pipeline to load raw .dat files into these tables.
+## Phase 2 — Python ETL (load .dat → PostgreSQL)
+
+### What the ETL does
+
+1. **Extract** — reads `data/*.dat` (OpenFlights CSV format, `\N` = null)
+2. **Transform** — maps columns to your star schema; preserves OpenFlights `airport_id` / `airline_id` so `routes.dat` foreign keys resolve
+3. **Load** — batch inserts into `dim_airport`, `dim_airline`, `dim_equipment`, then `fact_routes`
+
+Routes that reference missing airlines/airports are skipped (common in OpenFlights). Equipment is matched by IATA code (e.g. `CR2`).
+
+`dim_date` is not populated yet (no dates in route data — reserved for Phase 3+).
+
+### Your setup (one-time)
+
+**1. Python 3.10+** — you have `py` (Python 3.12). Use `py`, not `python`, if `python` is not on PATH.
+
+**2. PostgreSQL** — pick one:
+
+| Option | Steps |
+|--------|--------|
+| **Docker (recommended)** | Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), then from `openflights-pipeline`: `docker compose up -d` |
+| **Local install** | Install [PostgreSQL](https://www.postgresql.org/download/windows/), create database `openflights_dw`, user/password matching `.env` |
+
+**3. Project env**
+
+Edit `.env` and set `DB_PASSWORD` to the password you chose when installing PostgreSQL (default user `postgres`).
+
+```powershell
+cd E:\SUMMER_PROJECT\openflights-pipeline
+py -m pip install -r requirements.txt
+py scripts/setup_db.py
+```
+
+### Run the pipeline
+
+```powershell
+cd E:\SUMMER_PROJECT\openflights-pipeline
+py -m etl.run_etl --init
+```
+
+- `--init` — drops existing tables, recreates schema from `sql/schema.sql`, loads all data
+- `--dimensions-only` — load dimensions only (useful for debugging)
+
+### Verify
+
+Connect to the DB and run a query from `sql/queries.sql`, e.g. top 10 busiest airports.
+
+Docker:
+
+```powershell
+docker exec -it openflights-postgres psql -U openflights -d openflights_dw -c "SELECT COUNT(*) FROM fact_routes;"
+```
+
+### ETL layout
+
+```
+openflights-pipeline/etl/
+  config.py          # paths + DB settings from .env
+  db.py              # connect, init schema
+  parsers.py         # parse .dat files
+  load_dimensions.py # dim_airport, dim_airline, dim_equipment
+  load_facts.py      # fact_routes
+  run_etl.py         # entry point
+```
+
+### Next steps (Phase 4+)
+
+- Populate `dim_date` and add schedule/time analytics
+- Dashboards or BI on top of `queries.sql`
+- SCD Type 2 updates when airline data changes between loads
+- AWS deployment (Lambda / container)
+
+## Phase 3 — Docker & CI/CD
+
+### What Phase 3 adds (in plain English)
+
+Phase 2 made the pipeline work on **your** machine. Phase 3 makes it work on **any** machine — and proves it automatically on every GitHub push.
+
+| Piece | Simple analogy |
+|-------|----------------|
+| **Dockerfile** | A recipe that packages Python + your code into one box |
+| **docker-compose** | Starts the database box and ETL box together, wired to talk |
+| **pytest** | Robot checks that your parsers still work after code changes |
+| **GitHub Actions** | GitHub runs those robot checks every time you `git push` |
+
+### Docker quick start
+
+```powershell
+cd E:\SUMMER_PROJECT\openflights-pipeline
+docker compose up --build
+```
+
+This starts Postgres, waits until it is healthy, then runs the full ETL (`--init` once).
+
+Verify:
+
+```powershell
+docker exec openflights-postgres psql -U openflights -d openflights_dw -c "SELECT COUNT(*) FROM fact_routes;"
+```
+
+Stop: `docker compose down` (data persists). Reset data: `docker compose down -v`.
+
+**Note:** Docker uses user `openflights` / password `openflights`. Your local `.env` may still use `postgres` — that is fine; they are separate environments.
+
+### Tests
+
+```powershell
+cd E:\SUMMER_PROJECT\openflights-pipeline
+py -m pip install -r requirements-dev.txt
+py -m pytest tests/ -v
+```
+
+### CI/CD
+
+Workflow file: `.github/workflows/ci.yml` (repo root). On push to `main`:
+
+1. Installs Python dependencies
+2. Runs pytest
+3. Builds the Docker image
+
+Push to GitHub to activate the green badge on README.

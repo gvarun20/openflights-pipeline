@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: openflights-postgres
+    environment:
+      POSTGRES_USER: openflights
+      POSTGRES_PASSWORD: openflights
+      POSTGRES_DB: openflights_dw
+    ports:
+      - "5432:5432"
+    volumes:
+      - openflights_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openflights -d openflights_dw"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - openflights-net
+
+  etl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openflights-etl
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: openflights_dw
+      DB_USER: openflights
+      DB_PASSWORD: openflights
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - openflights-net
+    command: >
+      sh -c "
+        python -m etl.setup_db &&
+        python -m etl.run_etl --init
+      "
+
+volumes:
+  openflights_pgdata:
+
+networks:
+  openflights-net:
+    driver: bridge
