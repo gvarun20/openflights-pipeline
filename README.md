@@ -20,7 +20,9 @@ OpenFlights publishes messy `.dat` files with 67k+ flight routes. This project t
 
 **🌐 [View live dashboard](https://gvarun20.github.io/openflights-pipeline/)** — hosted on GitHub Pages (no install needed).
 
-Hosted from the `docs/` folder. Updates automatically when `docs/data.json` is pushed.
+**One-time setup:** GitHub → **Settings** → **Pages** → Source: **Deploy from a branch** → Branch: **`gh-pages`** → **`/ (root)`** → Save.
+
+The deploy workflow runs automatically on every push to `main`.
 
 ---
 
