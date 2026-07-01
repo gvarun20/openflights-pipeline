@@ -20,6 +20,11 @@ def main() -> int:
         action="store_true",
         help="Load dimension tables only (skip fact_routes)",
     )
+    parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Run Soda Core data quality checks after loading",
+    )
     args = parser.parse_args()
 
     try:
@@ -49,9 +54,20 @@ def main() -> int:
             print(f"  skipped (missing FK): {fact_stats['skipped_missing_fk']}")
 
         print("ETL complete.")
-        return 0
     finally:
         conn.close()
+
+    if args.validate and not args.dimensions_only:
+        print("Running data quality checks...")
+        from quality.run_checks import run_checks
+
+        code = run_checks()
+        if code != 0:
+            print("Data quality checks failed.")
+            return code
+        print("Data quality checks passed.")
+
+    return 0
 
 
 if __name__ == "__main__":

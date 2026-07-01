@@ -1,0 +1,24 @@
+checks for fact_routes:
+  - row_count between 65000 and 67000:
+      name: Route count in expected range
+  - missing_count(airline_id) = 0:
+      name: No null airline_id
+  - missing_count(src_airport_id) = 0:
+      name: No null source airport
+  - missing_count(dst_airport_id) = 0:
+      name: No null destination airport
+  - invalid_count(stops) = 0:
+      name: Stops are non-negative
+      valid min: 0
+
+checks for dim_airport:
+  - row_count > 7000:
+      name: Airport dimension populated
+
+checks for dim_airline:
+  - row_count > 6000:
+      name: Airline dimension populated
+
+checks for dim_equipment:
+  - row_count > 100:
+      name: Equipment dimension populated

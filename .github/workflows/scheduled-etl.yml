@@ -1,17 +1,19 @@
-name: CI Pipeline
+name: Scheduled Pipeline
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 defaults:
   run:
     working-directory: openflights-pipeline
 
 jobs:
-  test:
+  refresh:
     runs-on: ubuntu-latest
 
     services:
@@ -30,7 +32,7 @@ jobs:
           - 5432:5432
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python 3.11
@@ -46,22 +48,6 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      - name: Lint with flake8
-        run: |
-          pip install flake8
-          flake8 etl/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
-        continue-on-error: true
-
-      - name: Run pytest
-        run: python -m pytest tests/ -v --cov=etl --cov-report=xml -m "not integration"
-        env:
-          PYTHONPATH: .
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: openflights_dw
-          DB_USER: openflights
-          DB_PASSWORD: openflights
-
       - name: Run ETL and data quality checks
         run: python -m etl.run_etl --init --validate
         env:
@@ -72,8 +58,8 @@ jobs:
           DB_USER: openflights
           DB_PASSWORD: openflights
 
-      - name: Run integration tests
-        run: python -m pytest tests/test_integration.py -v
+      - name: Export dashboard snapshot
+        run: python dashboard/export_snapshot.py
         env:
           PYTHONPATH: .
           DB_HOST: localhost
@@ -82,15 +68,10 @@ jobs:
           DB_USER: openflights
           DB_PASSWORD: openflights
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: openflights-pipeline/coverage.xml
-          flags: unittests
-          fail_ci_if_error: false
-
-      - name: Build Docker image
-        run: docker build -t openflights-etl:latest .
-
-      - name: Test Docker image
-        run: docker run openflights-etl:latest python -m etl.run_etl --help
+      - name: Commit refreshed dashboard data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ../docs/data.json ../docs/data.js dashboard/demo_data.json
+          git diff --staged --quiet || git commit -m "chore: refresh dashboard data from scheduled ETL"
+          git push

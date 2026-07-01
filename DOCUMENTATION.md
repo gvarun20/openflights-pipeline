@@ -27,13 +27,14 @@
 8. [Dashboard](#8-dashboard)
 9. [Docker](#9-docker)
 10. [CI/CD (GitHub Actions)](#10-cicd-github-actions)
-11. [Repository structure](#11-repository-structure)
-12. [Setup guide](#12-setup-guide)
-13. [Environment variables](#13-environment-variables)
-14. [SQL analytics](#14-sql-analytics)
-15. [Testing](#15-testing)
-16. [Key metrics & insights](#16-key-metrics--insights)
-17. [Skills demonstrated](#17-skills-demonstrated)
+11. [Data quality (Soda Core)](#11-data-quality-soda-core)
+12. [Repository structure](#12-repository-structure)
+13. [Setup guide](#13-setup-guide)
+14. [Environment variables](#14-environment-variables)
+15. [SQL analytics](#15-sql-analytics)
+16. [Testing](#16-testing)
+17. [Key metrics & insights](#17-key-metrics--insights)
+18. [Skills demonstrated](#18-skills-demonstrated)
 
 ---
 
@@ -361,7 +362,8 @@ docker compose down -v
 
 | Workflow | File | Trigger | What it does |
 |----------|------|---------|--------------|
-| **CI Pipeline** | `.github/workflows/ci.yml` | Push / PR to `main` | pytest, flake8, Docker build |
+| **CI Pipeline** | `.github/workflows/ci.yml` | Push / PR to `main` | Unit tests → ETL → Soda checks → integration tests → Docker build |
+| **Scheduled Pipeline** | `.github/workflows/scheduled-etl.yml` | Weekly (Mon 06:00 UTC) + manual | Full ETL → quality → refresh dashboard JSON → push |
 | **Deploy Dashboard** | `.github/workflows/pages.yml` | Push to `main` | Publish `docs/` to `gh-pages` |
 
 ### CI steps
@@ -369,13 +371,41 @@ docker compose down -v
 2. Python 3.11 + pip cache
 3. Install `requirements.txt` + `requirements-dev.txt`
 4. flake8 (critical errors only)
-5. pytest with coverage (18 tests)
-6. Build Docker image
-7. Verify `python -m etl.run_etl --help` in container
+5. pytest unit tests (parser / validation)
+6. ETL `--init --validate` against CI Postgres
+7. pytest integration tests (row counts, top hub, Soda checks)
+8. Build Docker image
+9. Verify `python -m etl.run_etl --help` in container
 
 ---
 
-## 11. Repository structure
+## 11. Data quality (Soda Core)
+
+After ETL, **Soda Core** runs automated checks defined in `openflights-pipeline/quality/checks.yml`.
+
+| Check | Rule |
+|-------|------|
+| Route count | 65,000 – 67,000 rows in `fact_routes` |
+| Null FKs | No null `airline_id`, `src_airport_id`, or `dst_airport_id` |
+| Stops | All `stops` values ≥ 0 |
+| Dimensions | Airports > 7k, airlines > 6k, equipment > 100 |
+
+**Run manually:**
+```powershell
+cd openflights-pipeline
+py -m quality.run_checks -v
+```
+
+**Run with ETL:**
+```powershell
+py -m etl.run_etl --init --validate
+```
+
+Config: `quality/configuration.yml` (reads `DB_*` env vars).
+
+---
+
+## 12. Repository structure
 
 ```
 openflights-pipeline/          ← GitHub repo root
@@ -385,20 +415,24 @@ openflights-pipeline/          ← GitHub repo root
 ├── .gitignore
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml             ← Tests + Docker build
+│       ├── ci.yml             ← Tests + ETL + quality + Docker
+│       ├── scheduled-etl.yml  ← Weekly refresh
 │       └── pages.yml          ← Dashboard deploy
 ├── docs/                      ← GitHub Pages dashboard
 │   ├── index.html
-│   └── data.json
+│   ├── data.json
+│   └── data.js
 ├── sql/
 │   ├── schema.sql             ← Warehouse DDL
 │   └── queries.sql            ← Analytics SQL
 └── openflights-pipeline/
     ├── data/                  ← Raw OpenFlights .dat files
     ├── etl/                   ← Python ETL package
+    ├── quality/               ← Soda Core checks
     ├── dashboard/             ← Streamlit + snapshot export
-    ├── tests/                 ← pytest suite
-    ├── scripts/setup_db.py
+    ├── tests/                 ← pytest (unit + integration)
+    ├── scripts/               ← run_pipeline.ps1, setup_db.py
+    ├── Makefile
     ├── Dockerfile
     ├── docker-compose.yml
     ├── requirements.txt
@@ -408,7 +442,7 @@ openflights-pipeline/          ← GitHub repo root
 
 ---
 
-## 12. Setup guide
+## 13. Setup guide
 
 ### Prerequisites
 - Python 3.11+ (`py` on Windows)
@@ -442,7 +476,7 @@ SELECT COUNT(*) FROM fact_routes;  -- expect 66316
 
 ---
 
-## 13. Environment variables
+## 14. Environment variables
 
 File: `openflights-pipeline/.env` (never commit — in `.gitignore`)
 
@@ -458,7 +492,7 @@ Template: `openflights-pipeline/.env.example`
 
 ---
 
-## 14. SQL analytics
+## 15. SQL analytics
 
 File: `sql/queries.sql`
 
@@ -473,7 +507,7 @@ File: `sql/queries.sql`
 
 ---
 
-## 15. Testing
+## 16. Testing
 
 ```powershell
 cd openflights-pipeline/openflights-pipeline
@@ -481,18 +515,25 @@ py -m pip install -r requirements-dev.txt
 py -m pytest tests/ -v
 ```
 
-**18 tests** covering:
+**23 tests** covering:
 - Null parsing (`\N`, empty, `-`)
 - Fixed-width IATA/ICAO validation
 - Boolean Y/N conversion
 - Integer/float parsing
 - Route record integration
+- Warehouse row counts and top-hub assertions
+- Soda Core data quality checks
+
+```powershell
+py -m pytest tests/ -v -m "not integration"   # unit only
+py -m pytest tests/test_integration.py -v     # needs loaded DB
+```
 
 Config: `openflights-pipeline/pytest.ini` (`pythonpath = .`)
 
 ---
 
-## 16. Key metrics & insights
+## 17. Key metrics & insights
 
 | Metric | Value |
 |--------|------:|
@@ -507,7 +548,7 @@ Config: `openflights-pipeline/pytest.ini` (`pythonpath = .`)
 
 ---
 
-## 17. Skills demonstrated
+## 18. Skills demonstrated
 
 | Skill area | Evidence in this repo |
 |------------|----------------------|
@@ -516,8 +557,9 @@ Config: `openflights-pipeline/pytest.ini` (`pythonpath = .`)
 | Python ETL | Parsers, batch load, FK integrity, error handling |
 | PostgreSQL | Schema design, indexes, 66k+ row warehouse |
 | Docker | Dockerfile, multi-service compose, healthchecks |
-| CI/CD | GitHub Actions, automated tests, Docker build |
-| Testing | pytest unit tests, coverage |
+| Data quality | Soda Core checks in ETL + CI |
+| CI/CD | GitHub Actions — CI, scheduled ETL, Pages deploy |
+| Testing | pytest unit + integration tests, coverage |
 | Analytics / BI | Live Chart.js dashboard on GitHub Pages |
 | Documentation | This file, README, inline design rationale |
 

@@ -1,0 +1,8 @@
+data_source openflights_dw:
+  type: postgres
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  username: ${DB_USER}
+  password: ${DB_PASSWORD}
+  database: ${DB_NAME}
+  schema: public
