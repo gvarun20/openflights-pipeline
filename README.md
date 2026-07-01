@@ -6,7 +6,7 @@
 
 > **66,316 flight routes** · star-schema warehouse · Python ETL · Soda data quality · Docker · GitHub CI · live dashboard
 
-**[📊 Live Dashboard](https://gvarun20.github.io/openflights-pipeline/)** · **[📖 Full Documentation](DOCUMENTATION.md)** · **[⚙️ CI Runs](https://github.com/gvarun20/openflights-pipeline/actions)**
+**[📊 Live Dashboard](https://gvarun20.github.io/openflights-pipeline/)** · **[📖 Full Documentation](DOCUMENTATION.md)** (detailed phase-by-phase guide, CI, quality & integration tests) · **[⚙️ CI Runs](https://github.com/gvarun20/openflights-pipeline/actions)**
 
 ---
 
