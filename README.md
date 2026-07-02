@@ -2,168 +2,127 @@
 
 [![CI Pipeline](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml)
 [![Scheduled Pipeline](https://github.com/gvarun20/openflights-pipeline/actions/workflows/scheduled-etl.yml/badge.svg)](https://github.com/gvarun20/openflights-pipeline/actions/workflows/scheduled-etl.yml)
-[![Live Dashboard](https://img.shields.io/badge/dashboard-live-3b82f6?style=flat&logo=github)](https://gvarun20.github.io/openflights-pipeline/)
+[![Live Dashboard](https://img.shields.io/badge/dashboard-GitHub%20Pages-3b82f6?style=flat&logo=github)](https://gvarun20.github.io/openflights-pipeline/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://openflights-pipeline.streamlit.app)
 
-> **66,316 flight routes** · star-schema warehouse · Python ETL · Soda data quality · Docker · GitHub CI · live dashboard
+> **66,316 flight routes** · PostgreSQL star schema · Python ETL · Soda data quality · Docker · GitHub Actions · dual live dashboards
 
-**[📊 Live Dashboard](https://gvarun20.github.io/openflights-pipeline/)** · **[📖 Full Documentation](DOCUMENTATION.md)** (detailed phase-by-phase guide, CI, quality & integration tests) · **[⚙️ CI Runs](https://github.com/gvarun20/openflights-pipeline/actions)**
+---
+
+## Live demos
+
+| Demo | Link | Best for |
+|------|------|----------|
+| **Static dashboard** | **[gvarun20.github.io/openflights-pipeline](https://gvarun20.github.io/openflights-pipeline/)** | Fast load, charts & tables, always online |
+| **Streamlit app** | **[Deploy guide](openflights-pipeline/dashboard/STREAMLIT_CLOUD.md)** → *update badge URL after deploy* | Interactive tabs, portfolio / interviews |
+| **Documentation** | **[DOCUMENTATION.md](DOCUMENTATION.md)** | Full technical reference |
+| **Portfolio guide** | **[PORTFOLIO.md](PORTFOLIO.md)** | CV, LinkedIn, GitHub profile checklist |
+| **CI runs** | **[GitHub Actions](https://github.com/gvarun20/openflights-pipeline/actions)** | Proof of automated testing |
+
+> **Recruiters:** start with the [static dashboard](https://gvarun20.github.io/openflights-pipeline/) → then [GitHub repo](https://github.com/gvarun20/openflights-pipeline) → read [PORTFOLIO.md](PORTFOLIO.md) for a 30-second pitch.
 
 ---
 
 ## What this project is
 
-An end-to-end **data engineering pipeline** that transforms raw [OpenFlights](https://openflights.org/data.html) files into a PostgreSQL data warehouse, validates data quality with **Soda Core**, and visualises insights on a **live public dashboard** — no cloud account or credit card required.
+An end-to-end **data engineering pipeline** that transforms raw [OpenFlights](https://openflights.org/data.html) files into a validated PostgreSQL data warehouse and publishes insights on **public dashboards** — no paid cloud account required.
 
 ```mermaid
 flowchart LR
   subgraph ingest [Ingest]
-    DAT[".dat files\n(airports, airlines, routes)"]
+    DAT[".dat files"]
   end
-
   subgraph transform [Transform]
-    ETL["Python ETL\nDocker"]
-    DQ["Soda Core\ndata quality"]
+    ETL["Python ETL"]
+    DQ["Soda Core"]
   end
-
   subgraph store [Store]
-    PG[(PostgreSQL\nstar schema)]
+    PG[(PostgreSQL)]
   end
-
   subgraph deliver [Deliver]
-    DASH["GitHub Pages\ndashboard"]
-    CI["GitHub Actions\nCI + weekly refresh"]
+    PG_DASH["GitHub Pages"]
+    ST["Streamlit Cloud"]
+    CI["GitHub Actions"]
   end
-
-  DAT --> ETL --> PG
-  PG --> DQ
-  PG --> DASH
+  DAT --> ETL --> PG --> DQ
+  PG --> PG_DASH
+  PG --> ST
   ETL --> CI
-  DQ --> CI
 ```
 
 ---
 
-## Tech stack at a glance
+## Highlights (portfolio snapshot)
+
+| | |
+|---|---|
+| Routes loaded | **66,316** |
+| Automated tests | **23** (unit + integration) |
+| Data quality checks | **8** (Soda Core) |
+| Busiest hub | ATL — 1,826 connections |
+| Top airline | Ryanair — 2,484 routes |
+| CI/CD | GitHub Actions + weekly scheduled ETL |
+| Containers | Docker Compose with dev / pipeline / test profiles |
+
+**Skills:** data modelling · SQL · Python ETL · PostgreSQL · data quality · Docker · CI/CD · Streamlit · analytics
+
+---
+
+## Tech stack
 
 | Layer | Tools |
 |-------|-------|
 | Database | PostgreSQL 16 |
 | ETL | Python 3.11+, psycopg2 |
-| Data quality | Soda Core (8 automated checks) |
-| Containers | Docker, docker-compose |
-| Testing | pytest — unit + integration |
-| CI/CD | GitHub Actions (CI + scheduled ETL) |
-| Dashboard | HTML + Chart.js on GitHub Pages |
+| Data quality | Soda Core |
+| Containers | Docker, docker-compose (profiles) |
+| Testing | pytest — 23 tests |
+| CI/CD | GitHub Actions + scheduled pipeline |
+| Dashboards | Chart.js (GitHub Pages) + Streamlit Cloud |
 
-→ **[Complete tech stack, dependencies & setup guide](DOCUMENTATION.md)**
-
----
-
-## Key numbers
-
-| | |
-|---|---:|
-| Routes loaded | **66,316** |
-| Airports | 7,698 |
-| Airlines | 6,162 |
-| Busiest hub | ATL — 1,826 routes |
-| Data quality checks | **8 passing** |
+→ **[Complete documentation](DOCUMENTATION.md)** · **[Docker learning guide](openflights-pipeline/DOCKER.md)**
 
 ---
 
 ## Quick start
 
-**One command (local, after PostgreSQL is running):**
+**Streamlit (local preview):**
+```powershell
+cd openflights-pipeline/dashboard
+py -m pip install -r requirements.txt
+py -m streamlit run app.py
+```
+
+**Deploy to Streamlit Cloud (free):** follow **[STREAMLIT_CLOUD.md](openflights-pipeline/dashboard/STREAMLIT_CLOUD.md)** — takes ~5 minutes.
+
+**Full pipeline (local Python):**
 ```powershell
 cd openflights-pipeline
 .\scripts\run_pipeline.ps1
 ```
 
-**Docker (learning path — see [DOCKER.md](openflights-pipeline/DOCKER.md)):**
+**Docker:**
 ```powershell
 cd openflights-pipeline
-copy .env.example .env
-docker compose --profile dev up -d              # Postgres + pgAdmin + dashboard
 docker compose --profile pipeline up -d postgres
-docker compose --profile pipeline run --rm etl  # Load data
+docker compose --profile pipeline run --rm etl
 ```
-
-**Docker one-command pipeline:**
-```powershell
-.\scripts\run_pipeline_docker.ps1
-```
-
-**Step by step:**
-```powershell
-cd openflights-pipeline
-py -m pip install -r requirements.txt -r requirements-dev.txt
-py scripts/setup_db.py          # after editing .env
-py -m etl.run_etl --init --validate
-py dashboard/export_snapshot.py
-py -m pytest tests/ -v
-```
-
-**Make (Git Bash / WSL):**
-```bash
-cd openflights-pipeline
-make pipeline
-```
-
----
-
-## Data quality
-
-After every ETL run, **Soda Core** validates the warehouse:
-
-| Check | Rule |
-|-------|------|
-| Route count | 65,000 – 67,000 rows |
-| Null FKs | No null airline or airport IDs in `fact_routes` |
-| Stops | All values ≥ 0 |
-| Dimensions | Airports > 7k, airlines > 6k, equipment > 100 |
-
-```powershell
-py -m quality.run_checks -v
-```
-
-Checks live in `openflights-pipeline/quality/checks.yml`.
-
----
-
-## Automation
-
-| Workflow | Trigger | What it does |
-|----------|---------|--------------|
-| **CI Pipeline** | Every push / PR | Unit tests → ETL → Soda checks → integration tests → Docker build |
-| **Scheduled Pipeline** | Weekly (Mon 06:00 UTC) + manual | Full ETL → quality → refresh dashboard JSON → deploy |
 
 ---
 
 ## Project structure
 
 ```
-├── DOCUMENTATION.md       ← complete reference (start here)
-├── docs/                  ← live dashboard (GitHub Pages)
-├── sql/                   ← schema + analytics queries
+├── PORTFOLIO.md           ← CV, LinkedIn, GitHub checklist
+├── DOCUMENTATION.md       ← full technical reference
+├── docs/                  ← GitHub Pages dashboard
 └── openflights-pipeline/
     ├── etl/               ← Python ETL
     ├── quality/           ← Soda Core checks
-    ├── data/              ← OpenFlights .dat files
-    ├── tests/             ← unit + integration tests
-    ├── scripts/           ← run_pipeline.ps1
-    ├── Dockerfile
-    └── docker-compose.yml
+    ├── dashboard/         ← Streamlit app + deploy guide
+    ├── tests/             ← 23 pytest tests
+    └── docker-compose.yml ← Docker profiles
 ```
-
----
-
-## What I'd add in production
-
-- Orchestrator (Prefect / Airflow) for retries and lineage
-- Cloud Postgres (RDS / Cloud SQL) with managed backups
-- Grafana + postgres_exporter for runtime monitoring
-- dbt layer for business-facing SQL models
-- Alerting on failed Soda checks (Slack / PagerDuty)
 
 ---
 

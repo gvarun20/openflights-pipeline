@@ -8,7 +8,9 @@
 
 | | |
 |---|---|
-| **Live dashboard** | https://gvarun20.github.io/openflights-pipeline/ |
+| **Live dashboard (static)** | https://gvarun20.github.io/openflights-pipeline/ |
+| **Streamlit dashboard** | Deploy via [STREAMLIT_CLOUD.md](openflights-pipeline/dashboard/STREAMLIT_CLOUD.md) |
+| **Portfolio guide** | [PORTFOLIO.md](PORTFOLIO.md) |
 | **Repository** | https://github.com/gvarun20/openflights-pipeline |
 | **CI runs** | https://github.com/gvarun20/openflights-pipeline/actions |
 | **Routes loaded** | **66,316** |
@@ -898,9 +900,24 @@ git push
 
 Or wait for the **Scheduled Pipeline** to refresh automatically.
 
-### 14.3 Optional Streamlit dashboard
+### 14.3 Streamlit dashboard (interactive portfolio demo)
 
-Local interactive dashboard at `dashboard/app.py` — requires `dashboard/requirements.txt`. Not required for the public demo.
+**Local:**
+```powershell
+cd openflights-pipeline/dashboard
+py -m pip install -r requirements.txt
+py -m streamlit run app.py
+```
+
+**Streamlit Cloud (free, public URL):** see `openflights-pipeline/dashboard/STREAMLIT_CLOUD.md`
+
+| Deploy setting | Value |
+|----------------|-------|
+| Main file | `openflights-pipeline/dashboard/app.py` |
+| Requirements | `openflights-pipeline/dashboard/requirements.txt` |
+| Default mode | Demo snapshot — no database required |
+
+**Portfolio checklist (CV, LinkedIn, GitHub topics):** [PORTFOLIO.md](PORTFOLIO.md)
 
 ---
 
