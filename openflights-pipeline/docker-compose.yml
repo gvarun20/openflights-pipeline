@@ -1,47 +1,147 @@
+# OpenFlights Docker Compose — profiles:
+#   dev       → postgres + pgAdmin + local dashboard (nginx)
+#   pipeline  → postgres + one-off jobs (etl, quality, export)
+#   test      → postgres + automated test runner
+#
+# Quick start (learning path — see DOCKER.md):
+#   docker compose --profile dev up -d
+#   docker compose --profile pipeline up -d postgres
+#   docker compose --profile pipeline run --rm etl
+
+name: openflights
+
 services:
   postgres:
     image: postgres:16-alpine
     container_name: openflights-postgres
+    profiles: [dev, pipeline, test]
+    env_file:
+      - path: .env
+        required: false
     environment:
-      POSTGRES_USER: openflights
-      POSTGRES_PASSWORD: openflights
-      POSTGRES_DB: openflights_dw
+      POSTGRES_USER: ${DB_USER:-openflights}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-openflights}
+      POSTGRES_DB: ${DB_NAME:-openflights_dw}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - openflights_pgdata:/var/lib/postgresql/data
+      # Runs once on first boot (empty volume) — teaches init scripts
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U openflights -d openflights_dw"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 8
     networks:
       - openflights-net
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: openflights-pgadmin
+    profiles: [dev]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@openflights.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - openflights-net
+    restart: unless-stopped
+
+  dashboard:
+    image: nginx:alpine
+    container_name: openflights-dashboard
+    profiles: [dev]
+    ports:
+      - "${DASHBOARD_PORT:-8080}:80"
+    volumes:
+      - ../docs:/usr/share/nginx/html:ro
+    networks:
+      - openflights-net
+    restart: unless-stopped
 
   etl:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: openflights-etl
+    profiles: [pipeline]
     depends_on:
       postgres:
         condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: openflights_dw
-      DB_USER: openflights
-      DB_PASSWORD: openflights
+      DB_NAME: ${DB_NAME:-openflights_dw}
+      DB_USER: ${DB_USER:-openflights}
+      DB_PASSWORD: ${DB_PASSWORD:-openflights}
     volumes:
-      - ./data:/app/data
+      - ./data:/app/data:ro
       - ./logs:/app/logs
     networks:
       - openflights-net
-    command: >
-      sh -c "
-        python -m etl.setup_db &&
-        python -m etl.run_etl --init
-      "
+    command: ["python", "-m", "etl.run_etl", "--init", "--validate"]
+    restart: "no"
+
+  quality:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openflights-quality
+    profiles: [pipeline]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-openflights_dw}
+      DB_USER: ${DB_USER:-openflights}
+      DB_PASSWORD: ${DB_PASSWORD:-openflights}
+    networks:
+      - openflights-net
+    command: ["python", "-m", "quality.run_checks", "-v"]
+    restart: "no"
+
+  export:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openflights-export
+    profiles: [pipeline]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-openflights_dw}
+      DB_USER: ${DB_USER:-openflights}
+      DB_PASSWORD: ${DB_PASSWORD:-openflights}
+      DOCS_DIR: /docs
+    volumes:
+      - ./data:/app/data:ro
+      - ../docs:/docs
+      - ./dashboard:/app/dashboard
+    networks:
+      - openflights-net
+    command: ["python", "dashboard/export_snapshot.py"]
+    restart: "no"
 
 volumes:
   openflights_pgdata:

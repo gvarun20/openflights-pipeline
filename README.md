@@ -79,10 +79,18 @@ cd openflights-pipeline
 .\scripts\run_pipeline.ps1
 ```
 
-**Docker:**
+**Docker (learning path — see [DOCKER.md](openflights-pipeline/DOCKER.md)):**
 ```powershell
 cd openflights-pipeline
-docker compose up --build -d
+copy .env.example .env
+docker compose --profile dev up -d              # Postgres + pgAdmin + dashboard
+docker compose --profile pipeline up -d postgres
+docker compose --profile pipeline run --rm etl  # Load data
+```
+
+**Docker one-command pipeline:**
+```powershell
+.\scripts\run_pipeline_docker.ps1
 ```
 
 **Step by step:**

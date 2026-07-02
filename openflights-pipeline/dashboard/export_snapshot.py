@@ -1,6 +1,7 @@
 """Refresh dashboard/demo_data.json from PostgreSQL (run after ETL)."""
 
 import json
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -249,7 +250,7 @@ def main() -> int:
     snapshot = export_snapshot()
     json_text = json.dumps(snapshot, indent=2)
     OUTPUT.write_text(json_text, encoding="utf-8")
-    pages_dir = PROJECT_ROOT.parent / "docs"
+    pages_dir = Path(os.getenv("DOCS_DIR", str(PROJECT_ROOT.parent / "docs")))
     if pages_dir.exists():
         (pages_dir / "data.json").write_text(json_text, encoding="utf-8")
         (pages_dir / "data.js").write_text(

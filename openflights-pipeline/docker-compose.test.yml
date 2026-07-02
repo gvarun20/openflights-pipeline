@@ -1,0 +1,32 @@
+# Override file for CI and local integration testing.
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.test.yml --profile test up --build --abort-on-container-exit
+#   docker compose -f docker-compose.yml -f docker-compose.test.yml --profile test down -v
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openflights-test
+    profiles: [test]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-openflights_dw}
+      DB_USER: ${DB_USER:-openflights}
+      DB_PASSWORD: ${DB_PASSWORD:-openflights}
+      PYTHONPATH: /app
+    volumes:
+      - ./data:/app/data:ro
+    networks:
+      - openflights-net
+    command: >
+      sh -c "
+        python -m etl.run_etl --init --validate &&
+        python -m pytest tests/ -v
+      "
+    restart: "no"

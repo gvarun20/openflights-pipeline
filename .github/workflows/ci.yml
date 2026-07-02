@@ -93,4 +93,9 @@ jobs:
         run: docker build -t openflights-etl:latest .
 
       - name: Test Docker image
-        run: docker run openflights-etl:latest python -m etl.run_etl --help
+        run: docker run --rm openflights-etl:latest python -m etl.run_etl --help
+
+      - name: Run full test stack with Docker Compose
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.test.yml --profile test up --build --abort-on-container-exit
+          docker compose -f docker-compose.yml -f docker-compose.test.yml --profile test down -v
