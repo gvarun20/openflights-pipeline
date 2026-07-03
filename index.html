@@ -51,6 +51,11 @@
       border-top: 1px solid var(--border); margin-top: 1rem; }
     footer a { color: var(--accent); text-decoration: none; }
     .updated { text-align: right; color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; }
+    .comments-card { margin-top: 0.5rem; }
+    .comments-card .subtitle { margin-bottom: 0.5rem; }
+    .comments-wrap { margin-top: 1rem; min-height: 120px; }
+    .comments-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.75rem; }
+    .comments-note a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
 <body>
@@ -163,6 +168,22 @@
       <h2>Active vs inactive airlines</h2>
       <p class="subtitle">In OpenFlights registry (many historical entries are inactive)</p>
       <div class="chart-wrap sm"><canvas id="activeChart"></canvas></div>
+    </div>
+
+    <p class="section-title">Feedback</p>
+    <div class="card comments-card">
+      <h2>💬 Leave your thoughts</h2>
+      <p class="subtitle">Recruiters, classmates, or anyone visiting — tell me what you think of this MSc demo project.</p>
+      <div class="comments-wrap">
+        <script src="https://utterances.client.js"
+          repo="gvarun20/openflights-pipeline"
+          issue-term="Dashboard feedback"
+          theme="github-dark"
+          crossorigin="anonymous"
+          async>
+        </script>
+      </div>
+      <p class="comments-note">Comments are stored as GitHub Issues in the repo. You need a free GitHub account to post. <a href="https://github.com/gvarun20/openflights-pipeline/issues?q=is%3Aissue+Dashboard+feedback">View all feedback</a></p>
     </div>
   </main>
 
