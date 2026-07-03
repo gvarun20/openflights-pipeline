@@ -1,0 +1,26 @@
+name: Dashboard feedback
+description: Feedback from the live GitHub Pages dashboard
+title: "Dashboard feedback"
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for visiting the [live dashboard](https://gvarun20.github.io/openflights-pipeline/)!
+
+  - type: textarea
+    id: message
+    attributes:
+      label: Your feedback
+      description: What do you think of the project, pipeline, or dashboard?
+      placeholder: "e.g. Clear charts, good star schema design, suggestion for improvement..."
+    validations:
+      required: true
+
+  - type: input
+    id: name
+    attributes:
+      label: Your name (optional)
+      placeholder: "e.g. Alex — MSc recruiter"
+    validations:
+      required: false
