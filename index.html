@@ -52,8 +52,35 @@
     footer a { color: var(--accent); text-decoration: none; }
     .updated { text-align: right; color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; }
     .comments-card { margin-top: 0.5rem; }
-    .comments-card .subtitle { margin-bottom: 0.5rem; }
-    .comments-wrap { margin-top: 1rem; min-height: 120px; }
+    .comments-card .subtitle { margin-bottom: 0.75rem; }
+    .feedback-form { display: flex; flex-direction: column; gap: 0.75rem; }
+    .feedback-form textarea {
+      width: 100%; min-height: 120px; padding: 0.85rem 1rem;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font: inherit; font-size: 0.9rem; resize: vertical;
+      line-height: 1.5;
+    }
+    .feedback-form textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    .feedback-form textarea::placeholder { color: var(--muted); }
+    .feedback-form input {
+      width: 100%; padding: 0.65rem 1rem;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font: inherit; font-size: 0.9rem;
+    }
+    .feedback-form input:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    .feedback-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+    .feedback-btn {
+      background: var(--accent); color: #fff; border: none; border-radius: 8px;
+      padding: 0.65rem 1.25rem; font: inherit; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer;
+    }
+    .feedback-btn:hover { filter: brightness(1.08); }
     .comments-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.75rem; }
     .comments-note a { color: var(--accent); text-decoration: none; }
   </style>
@@ -174,16 +201,18 @@
     <div class="card comments-card">
       <h2>💬 Leave your thoughts</h2>
       <p class="subtitle">Recruiters, classmates, or anyone visiting — tell me what you think of this MSc demo project.</p>
-      <div class="comments-wrap">
-        <script src="https://utterances.client.js"
-          repo="gvarun20/openflights-pipeline"
-          issue-term="Dashboard feedback"
-          theme="github-dark"
-          crossorigin="anonymous"
-          async>
-        </script>
-      </div>
-      <p class="comments-note">Comments are stored as GitHub Issues in the repo. You need a free GitHub account to post. <a href="https://github.com/gvarun20/openflights-pipeline/issues?q=is%3Aissue+Dashboard+feedback">View all feedback</a></p>
+      <form class="feedback-form" id="feedbackForm">
+        <label for="feedbackName" style="font-size:0.8rem;color:var(--muted)">Your name (optional)</label>
+        <input type="text" id="feedbackName" name="name" maxlength="80" placeholder="e.g. Alex — MSc recruiter" autocomplete="name" />
+        <label for="feedbackText" style="font-size:0.8rem;color:var(--muted)">Your feedback</label>
+        <textarea id="feedbackText" name="message" required maxlength="4000"
+          placeholder="What do you think of the dashboard, pipeline, or project overall? Any suggestions welcome."></textarea>
+        <div class="feedback-actions">
+          <button type="submit" class="feedback-btn">Submit feedback on GitHub</button>
+          <span style="font-size:0.8rem;color:var(--muted)">Opens GitHub — sign in to post</span>
+        </div>
+      </form>
+      <p class="comments-note">Feedback is saved as a GitHub Issue in this repo. <a href="https://github.com/gvarun20/openflights-pipeline/issues?q=is%3Aissue+label%3Afeedback">View all feedback</a></p>
     </div>
   </main>
 
@@ -345,6 +374,21 @@
     } else {
       boot();
     }
+
+    document.getElementById("feedbackForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("feedbackName").value.trim();
+      const message = document.getElementById("feedbackText").value.trim();
+      if (!message) return;
+
+      const title = "Dashboard feedback";
+      const body = (name ? "**From:** " + name + "\n\n" : "") + message + "\n\n---\n*Submitted via [live dashboard](https://gvarun20.github.io/openflights-pipeline/).*";
+      const url = "https://github.com/gvarun20/openflights-pipeline/issues/new"
+        + "?title=" + encodeURIComponent(title)
+        + "&body=" + encodeURIComponent(body)
+        + "&labels=feedback";
+      window.open(url, "_blank", "noopener,noreferrer");
+    });
   </script>
 </body>
 </html>
