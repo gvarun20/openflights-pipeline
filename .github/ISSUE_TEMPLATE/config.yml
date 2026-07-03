@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/gvarun20/openflights-pipeline/blob/main/DOCUMENTATION.md
+    about: Read the full project write-up first
+  - name: Live dashboard
+    url: https://gvarun20.github.io/openflights-pipeline/
+    about: Try the static demo dashboard

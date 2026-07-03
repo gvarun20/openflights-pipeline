@@ -1,0 +1,45 @@
+name: Data bug
+description: Something looks wrong in the loaded data or dashboard numbers
+title: "[data] "
+labels: ["data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for looking at this demo project! Please describe what number or chart looks wrong.
+        (Remember: OpenFlights source data itself has gaps — not every issue is an ETL bug.)
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What looks wrong?
+      placeholder: "e.g. route count is 0 on dashboard, or ATL is not top hub anymore"
+    validations:
+      required: true
+
+  - type: textarea
+    id: where
+    attributes:
+      label: Where did you see it?
+      placeholder: "Streamlit / GitHub Pages / local PostgreSQL / CI logs"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce (if any)
+      placeholder: "1. Run docker compose ... 2. Open ..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How bad is it for this demo project?
+      options:
+        - Cosmetic (typo / chart label)
+        - Wrong analytics number
+        - Pipeline won't run at all
+    validations:
+      required: true

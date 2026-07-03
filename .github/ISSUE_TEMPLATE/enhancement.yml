@@ -1,0 +1,36 @@
+name: Enhancement idea
+description: Suggest a new feature for this demo project
+title: "[idea] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas welcome! This is a learning/portfolio repo — I may not implement everything,
+        but good suggestions help me learn what to build next.
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to see?
+      placeholder: "e.g. map of all US routes, dbt models, Prefect orchestration"
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it be useful (for learning or demo)?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Rough effort (your guess)
+      options:
+        - Quick win (< 1 day)
+        - Weekend project
+        - Big stretch goal
+    validations:
+      required: false

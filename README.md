@@ -1,127 +1,127 @@
 # Open Flights Data Pipeline
 
 [![CI Pipeline](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml)
-[![Scheduled Pipeline](https://github.com/gvarun20/openflights-pipeline/actions/workflows/scheduled-etl.yml/badge.svg)](https://github.com/gvarun20/openflights-pipeline/actions/workflows/scheduled-etl.yml)
-[![Live Dashboard](https://img.shields.io/badge/dashboard-GitHub%20Pages-3b82f6?style=flat&logo=github)](https://gvarun20.github.io/openflights-pipeline/)
+[![Live Dashboard](https://img.shields.io/badge/demo-GitHub%20Pages-3b82f6?style=flat&logo=github)](https://gvarun20.github.io/openflights-pipeline/)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://openflights-pipeline.streamlit.app)
 
-> **66,316 flight routes** · PostgreSQL star schema · Python ETL · Soda data quality · Docker · GitHub Actions · dual live dashboards
+> **MSc portfolio demo** · 66,316 flight routes · PostgreSQL · Python ETL · free dashboards  
+> *Built to show coursework skills — not a production airline system*
 
 ---
 
-## Live demos
+## Watch the demo (2 min)
 
-| Demo | Link | Best for |
-|------|------|----------|
-| **Static dashboard** | **[gvarun20.github.io/openflights-pipeline](https://gvarun20.github.io/openflights-pipeline/)** | Fast load, charts & tables, always online |
-| **Streamlit app** | **[Deploy guide](openflights-pipeline/dashboard/STREAMLIT_CLOUD.md)** → *update badge URL after deploy* | Interactive tabs, portfolio / interviews |
-| **Documentation** | **[DOCUMENTATION.md](DOCUMENTATION.md)** | Full technical reference |
-| **Portfolio guide** | **[PORTFOLIO.md](PORTFOLIO.md)** | CV, LinkedIn, GitHub profile checklist |
-| **CI runs** | **[GitHub Actions](https://github.com/gvarun20/openflights-pipeline/actions)** | Proof of automated testing |
+Record a short walkthrough on [Loom](https://www.loom.com) and paste your link here:
 
-> **Recruiters:** start with the [static dashboard](https://gvarun20.github.io/openflights-pipeline/) → then [GitHub repo](https://github.com/gvarun20/openflights-pipeline) → read [PORTFOLIO.md](PORTFOLIO.md) for a 30-second pitch.
+<!-- Replace YOUR_LOOM_URL with your actual share link -->
+[![Demo video](https://img.shields.io/badge/▶_Watch-Loom_demo-625DF5?style=for-the-badge&logo=loom&logoColor=white)](YOUR_LOOM_URL)
+
+**Suggested script for your recording:**
+1. Show the [static dashboard](https://gvarun20.github.io/openflights-pipeline/) (30 sec)
+2. Show the Streamlit map/network tab (30 sec)
+3. Quick peek at GitHub — ETL folder + green CI badge (30 sec)
+4. One sentence: *"This is my MSc demo pipeline, not live flight data"* (10 sec)
 
 ---
 
-## What this project is
+## Architecture (demo pipeline)
 
-An end-to-end **data engineering pipeline** that transforms raw [OpenFlights](https://openflights.org/data.html) files into a validated PostgreSQL data warehouse and publishes insights on **public dashboards** — no paid cloud account required.
+![Architecture diagram](docs/architecture.png)
+
+<details>
+<summary>Mermaid version (same diagram)</summary>
 
 ```mermaid
 flowchart LR
-  subgraph ingest [Ingest]
-    DAT[".dat files"]
-  end
-  subgraph transform [Transform]
-    ETL["Python ETL"]
-    DQ["Soda Core"]
-  end
-  subgraph store [Store]
-    PG[(PostgreSQL)]
-  end
-  subgraph deliver [Deliver]
-    PG_DASH["GitHub Pages"]
-    ST["Streamlit Cloud"]
-    CI["GitHub Actions"]
-  end
-  DAT --> ETL --> PG --> DQ
-  PG --> PG_DASH
-  PG --> ST
-  ETL --> CI
+  DAT[".dat files"] --> ETL["Python ETL"] --> PG[(PostgreSQL)]
+  PG --> DQ["Soda checks"]
+  PG --> DASH["Dashboards"]
 ```
 
+</details>
+
+→ Table/column meanings: **[METADATA.md](METADATA.md)**  
+→ Full write-up: **[DOCUMENTATION.md](DOCUMENTATION.md)**
+
 ---
 
-## Highlights (portfolio snapshot)
+## Live demos (click these)
+
+| Demo | Link |
+|------|------|
+| **Static dashboard** | https://gvarun20.github.io/openflights-pipeline/ |
+| **Streamlit app** | Deploy via [STREAMLIT_CLOUD.md](openflights-pipeline/dashboard/STREAMLIT_CLOUD.md) |
+| **GitHub profile README** | Copy from [docs/GITHUB_PROFILE_README.md](docs/GITHUB_PROFILE_README.md) |
+
+---
+
+## What this project is (honest version)
+
+I took public [OpenFlights](https://openflights.org/data.html) files and built a **small data warehouse demo**:
+
+```
+.dat files  →  Python ETL  →  PostgreSQL  →  quality checks  →  dashboards
+```
+
+**Why I built it:** to practice what we cover in a data engineering master's — modelling, ETL, testing, Docker, and showing results to non-coders.
+
+**What it is not:** real-time flights, paid cloud infra, or production on-call support.
+
+---
+
+## Highlights
 
 | | |
-|---|---|
-| Routes loaded | **66,316** |
-| Automated tests | **23** (unit + integration) |
-| Data quality checks | **8** (Soda Core) |
-| Busiest hub | ATL — 1,826 connections |
-| Top airline | Ryanair — 2,484 routes |
-| CI/CD | GitHub Actions + weekly scheduled ETL |
-| Containers | Docker Compose with dev / pipeline / test profiles |
-
-**Skills:** data modelling · SQL · Python ETL · PostgreSQL · data quality · Docker · CI/CD · Streamlit · analytics
-
----
-
-## Tech stack
-
-| Layer | Tools |
-|-------|-------|
-| Database | PostgreSQL 16 |
-| ETL | Python 3.11+, psycopg2 |
-| Data quality | Soda Core |
-| Containers | Docker, docker-compose (profiles) |
-| Testing | pytest — 23 tests |
-| CI/CD | GitHub Actions + scheduled pipeline |
-| Dashboards | Chart.js (GitHub Pages) + Streamlit Cloud |
-
-→ **[Complete documentation](DOCUMENTATION.md)** · **[Docker learning guide](openflights-pipeline/DOCKER.md)**
+|---|---:|
+| Routes loaded | 66,316 |
+| Tests | 23 |
+| Soda checks | 8 |
+| Busiest hub | ATL |
+| Cost to host demos | £0 |
 
 ---
 
 ## Quick start
 
-**Streamlit (local preview):**
+**Streamlit locally:**
 ```powershell
 cd openflights-pipeline/dashboard
 py -m pip install -r requirements.txt
 py -m streamlit run app.py
 ```
 
-**Deploy to Streamlit Cloud (free):** follow **[STREAMLIT_CLOUD.md](openflights-pipeline/dashboard/STREAMLIT_CLOUD.md)** — takes ~5 minutes.
-
-**Full pipeline (local Python):**
+**Full pipeline:**
 ```powershell
 cd openflights-pipeline
 .\scripts\run_pipeline.ps1
 ```
 
-**Docker:**
-```powershell
-cd openflights-pipeline
-docker compose --profile pipeline up -d postgres
-docker compose --profile pipeline run --rm etl
-```
+**Docker (learning stack):** see [DOCKER.md](openflights-pipeline/DOCKER.md)
+
+---
+
+## Repo extras (portfolio polish)
+
+| File | What it is |
+|------|------------|
+| [METADATA.md](METADATA.md) | Plain-English column dictionary |
+| [PORTFOLIO.md](PORTFOLIO.md) | CV / LinkedIn snippets |
+| [docs/GITHUB_PROFILE_README.md](docs/GITHUB_PROFILE_README.md) | Profile README to copy |
+| Issue templates | "Data bug" + "Enhancement idea" |
 
 ---
 
 ## Project structure
 
 ```
-├── PORTFOLIO.md           ← CV, LinkedIn, GitHub checklist
-├── DOCUMENTATION.md       ← full technical reference
-├── docs/                  ← GitHub Pages dashboard
+├── METADATA.md              ← what each column means
+├── DOCUMENTATION.md         ← full technical notes
+├── docs/architecture.png    ← diagram for README
 └── openflights-pipeline/
-    ├── etl/               ← Python ETL
-    ├── quality/           ← Soda Core checks
-    ├── dashboard/         ← Streamlit app + deploy guide
-    ├── tests/             ← 23 pytest tests
-    └── docker-compose.yml ← Docker profiles
+    ├── etl/
+    ├── quality/
+    ├── dashboard/           ← Streamlit + maps
+    └── tests/
 ```
 
 ---
@@ -129,3 +129,5 @@ docker compose --profile pipeline run --rm etl
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+*MSc demo project · [gvarun20](https://github.com/gvarun20)*

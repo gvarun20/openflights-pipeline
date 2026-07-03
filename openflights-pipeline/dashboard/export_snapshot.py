@@ -42,15 +42,24 @@ def export_snapshot() -> dict:
             UNION ALL
             SELECT dst_airport_id, COUNT(*) FROM fact_routes GROUP BY 1
         )
-        SELECT a.name, a.city, a.country, a.iata_code, SUM(t.cnt)::int
+        SELECT a.name, a.city, a.country, a.iata_code,
+               a.latitude, a.longitude, SUM(t.cnt)::int
         FROM airport_traffic t
         JOIN dim_airport a ON a.airport_id = t.airport_id
-        GROUP BY a.name, a.city, a.country, a.iata_code
-        ORDER BY 5 DESC LIMIT 10
+        GROUP BY a.name, a.city, a.country, a.iata_code, a.latitude, a.longitude
+        ORDER BY 7 DESC LIMIT 10
         """
     )
     top_airports = [
-        {"name": r[0], "city": r[1], "country": r[2], "iata": r[3], "routes": r[4]}
+        {
+            "name": r[0],
+            "city": r[1],
+            "country": r[2],
+            "iata": r[3],
+            "latitude": float(r[4]) if r[4] is not None else None,
+            "longitude": float(r[5]) if r[5] is not None else None,
+            "routes": r[6],
+        }
         for r in cur.fetchall()
     ]
 
@@ -145,13 +154,17 @@ def export_snapshot() -> dict:
 
     cur.execute(
         """
-        SELECT sa.iata_code, da.iata_code, sa.city, da.city, COUNT(*)::int
+        SELECT sa.iata_code, da.iata_code, sa.city, da.city,
+               sa.latitude, sa.longitude, da.latitude, da.longitude,
+               COUNT(*)::int
         FROM fact_routes r
         JOIN dim_airport sa ON sa.airport_id = r.src_airport_id
         JOIN dim_airport da ON da.airport_id = r.dst_airport_id
         WHERE sa.iata_code IS NOT NULL AND da.iata_code IS NOT NULL
-        GROUP BY sa.iata_code, da.iata_code, sa.city, da.city
-        ORDER BY 5 DESC LIMIT 10
+          AND sa.latitude IS NOT NULL AND da.latitude IS NOT NULL
+        GROUP BY sa.iata_code, da.iata_code, sa.city, da.city,
+                 sa.latitude, sa.longitude, da.latitude, da.longitude
+        ORDER BY 9 DESC LIMIT 12
         """
     )
     top_route_pairs = [
@@ -160,7 +173,11 @@ def export_snapshot() -> dict:
             "to_iata": r[1],
             "from_city": r[2],
             "to_city": r[3],
-            "routes": r[4],
+            "from_lat": float(r[4]),
+            "from_lon": float(r[5]),
+            "to_lat": float(r[6]),
+            "to_lon": float(r[7]),
+            "routes": r[8],
         }
         for r in cur.fetchall()
     ]
