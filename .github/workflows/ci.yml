@@ -96,6 +96,9 @@ jobs:
         run: docker run --rm openflights-etl:latest python -m etl.run_etl --help
 
       - name: Run full test stack with Docker Compose
+        env:
+          # GitHub Actions postgres service already uses host port 5432
+          DB_PORT: "5433"
         run: |
           docker compose -f docker-compose.yml -f docker-compose.test.yml --profile test up --build --abort-on-container-exit
           docker compose -f docker-compose.yml -f docker-compose.test.yml --profile test down -v
