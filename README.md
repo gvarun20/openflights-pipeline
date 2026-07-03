@@ -10,9 +10,11 @@
 
 ## Live demo
 
-**Dashboard:** https://gvarun20.github.io/openflights-pipeline/
+**Dashboard:** https://gvarun20.github.io/openflights-pipeline/ — scroll down for the **feedback comment box**.
 
 **Repo:** https://github.com/gvarun20/openflights-pipeline
+
+**One-time comment setup (repo owner):** Install the [Utterances GitHub App](https://github.com/apps/utterances) on this repo. Visitors sign in with GitHub to leave feedback.
 
 ---
 
