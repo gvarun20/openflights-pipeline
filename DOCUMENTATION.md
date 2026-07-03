@@ -9,7 +9,6 @@
 | | |
 |---|---|
 | **Live dashboard (static)** | https://gvarun20.github.io/openflights-pipeline/ |
-| **Streamlit dashboard** | Deploy via [STREAMLIT_CLOUD.md](openflights-pipeline/dashboard/STREAMLIT_CLOUD.md) |
 | **Portfolio guide** | [PORTFOLIO.md](PORTFOLIO.md) |
 | **Repository** | https://github.com/gvarun20/openflights-pipeline |
 | **CI runs** | https://github.com/gvarun20/openflights-pipeline/actions |
@@ -211,13 +210,13 @@ The project was built incrementally. Each phase added a layer that real data tea
 | `docs/index.html` | Chart.js dashboard (KPIs, charts, tables) |
 | `docs/data.json` / `docs/data.js` | Snapshot data from warehouse |
 | `dashboard/export_snapshot.py` | SQL → JSON export |
-| `.github/workflows/pages.yml` | Deploy to `gh-pages` branch |
+| `.github/workflows/pages.yml` | Deploy `docs/` via GitHub Actions Pages |
 
 **Dashboard highlights:** Top airports, airlines, country corridors, network hubs, aircraft types, domestic vs international split.
 
 **Live URL:** https://gvarun20.github.io/openflights-pipeline/
 
-**Outcome:** Portfolio-ready demo without AWS or Streamlit Cloud.
+**Outcome:** Portfolio-ready demo on GitHub Pages (free hosting).
 
 ---
 
@@ -342,7 +341,6 @@ flowchart TB
 | **Linting** | flake8 | CI (non-blocking, critical errors only) |
 | **CI/CD** | GitHub Actions | CI, scheduled ETL, Pages deploy |
 | **Dashboard** | HTML + Chart.js 4.4.1 | GitHub Pages (`docs/`) |
-| **Optional dashboard** | Streamlit + pandas | Local only (`dashboard/app.py`) |
 
 ### Dependencies
 
@@ -863,9 +861,10 @@ DB_PASSWORD=openflights
 | Step | What it does |
 |------|--------------|
 | Checkout | Get latest `docs/` folder |
-| Deploy | `peaceiris/actions-gh-pages` publishes to `gh-pages` branch |
+| Upload artifact | Package `docs/` for GitHub Pages |
+| Deploy | `actions/deploy-pages` publishes the site |
 
-**GitHub Pages setup (one-time):** Repo → Settings → Pages → Source: **`gh-pages`** branch, **`/ (root)`**.
+**GitHub Pages setup (one-time):** Repo → Settings → Pages → **Build and deployment → Source: GitHub Actions**.
 
 ---
 
@@ -900,24 +899,18 @@ git push
 
 Or wait for the **Scheduled Pipeline** to refresh automatically.
 
-### 14.3 Streamlit dashboard (interactive portfolio demo)
+### 14.3 GitHub Pages setup note
 
-**Local:**
-```powershell
-cd openflights-pipeline/dashboard
-py -m pip install -r requirements.txt
-py -m streamlit run app.py
-```
+**One-time in repo Settings:**
+1. **Settings → Pages**
+2. **Build and deployment → Source:** **GitHub Actions**
+3. Save
 
-**Streamlit Cloud (free, public URL):** see `openflights-pipeline/dashboard/STREAMLIT_CLOUD.md`
+Our workflow **Deploy Dashboard to GitHub Pages** (`pages.yml`) uploads the `docs/` folder and deploys with the official Pages actions. A `.nojekyll` file is included so GitHub does not run Jekyll on the static files.
 
-| Deploy setting | Value |
-|----------------|-------|
-| Main file | `openflights-pipeline/dashboard/app.py` |
-| Requirements | `openflights-pipeline/dashboard/requirements.txt` |
-| Default mode | Demo snapshot — no database required |
+If you previously used the `gh-pages` branch, you can ignore red **"pages build and deployment"** runs on that branch — they are from the old setup.
 
-**Portfolio checklist (CV, LinkedIn, GitHub topics):** [PORTFOLIO.md](PORTFOLIO.md)
+**Portfolio checklist:** [PORTFOLIO.md](PORTFOLIO.md)
 
 ---
 
@@ -979,7 +972,7 @@ openflights-pipeline/          ← GitHub repo root
     │   └── run_checks.py
     ├── dashboard/
     │   ├── export_snapshot.py
-    │   └── app.py             ← Optional Streamlit
+    │   └── export_snapshot.py   ← SQL → JSON for dashboard
     ├── tests/
     │   ├── test_etl.py        ← 18 unit tests
     │   └── test_integration.py  ← 5 integration tests
@@ -1114,7 +1107,7 @@ If this project were deployed in a real organisation, these would be natural nex
 | **Grafana + postgres_exporter** | Runtime monitoring of Postgres and ETL duration |
 | **Terraform + cloud Postgres** | Managed RDS/Cloud SQL with IaC |
 | **Alerting on failed Soda checks** | Slack/email when quality fails |
-| **Streamlit Cloud** | Hosted interactive dashboard |
+| **Neon / Supabase free Postgres** | Optional cloud database for live demos |
 | **Great Expectations profiling** | Automated column-level profiling reports |
 
 ---

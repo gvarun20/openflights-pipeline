@@ -21,7 +21,7 @@ body:
     id: where
     attributes:
       label: Where did you see it?
-      placeholder: "Streamlit / GitHub Pages / local PostgreSQL / CI logs"
+      placeholder: "GitHub Pages / local PostgreSQL / CI logs"
     validations:
       required: true
 
