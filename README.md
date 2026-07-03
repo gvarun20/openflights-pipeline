@@ -84,7 +84,7 @@ cd openflights-pipeline
 | **CI Pipeline** | Tests + ETL + quality + Docker — should be green |
 | **Deploy Dashboard** | Pushes `docs/` to `gh-pages` branch |
 
-Pages deploy uses **GitHub Actions** (`pages.yml`). One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**. The old `gh-pages` branch workflow is no longer used.
+**About the red badge:** If **CI Pipeline** and **Deploy Dashboard** are green, you are fine. A separate GitHub job called **"pages build and deployment"** (on the `gh-pages` branch) can fail even when the site is live — it is not your main CI. See [DOCUMENTATION.md](DOCUMENTATION.md#143-github-pages-setup-note).
 
 ---
 

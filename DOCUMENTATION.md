@@ -210,7 +210,7 @@ The project was built incrementally. Each phase added a layer that real data tea
 | `docs/index.html` | Chart.js dashboard (KPIs, charts, tables) |
 | `docs/data.json` / `docs/data.js` | Snapshot data from warehouse |
 | `dashboard/export_snapshot.py` | SQL → JSON export |
-| `.github/workflows/pages.yml` | Deploy `docs/` via GitHub Actions Pages |
+| `.github/workflows/pages.yml` | Deploy to `gh-pages` branch |
 
 **Dashboard highlights:** Top airports, airlines, country corridors, network hubs, aircraft types, domestic vs international split.
 
@@ -861,10 +861,9 @@ DB_PASSWORD=openflights
 | Step | What it does |
 |------|--------------|
 | Checkout | Get latest `docs/` folder |
-| Upload artifact | Package `docs/` for GitHub Pages |
-| Deploy | `actions/deploy-pages` publishes the site |
+| Deploy | `peaceiris/actions-gh-pages` publishes to `gh-pages` branch |
 
-**GitHub Pages setup (one-time):** Repo → Settings → Pages → **Build and deployment → Source: GitHub Actions**.
+**GitHub Pages setup (one-time):** Repo → Settings → Pages → Source: **`gh-pages`** branch, **`/ (root)`**.
 
 ---
 
@@ -901,14 +900,17 @@ Or wait for the **Scheduled Pipeline** to refresh automatically.
 
 ### 14.3 GitHub Pages setup note
 
-**One-time in repo Settings:**
+If **CI Pipeline** and **Deploy Dashboard to GitHub Pages** are green, your project CI is healthy.
+
+A red **"pages build and deployment"** run (on the `gh-pages` branch) is GitHub's separate built-in Pages job — not your main CI. The site can still be live at https://gvarun20.github.io/openflights-pipeline/ when that job fails.
+
+**Fix (one-time in repo Settings):**
 1. **Settings → Pages**
-2. **Build and deployment → Source:** **GitHub Actions**
-3. Save
+2. **Source:** Deploy from a branch
+3. **Branch:** `gh-pages` / `/ (root)`
+4. Save
 
-Our workflow **Deploy Dashboard to GitHub Pages** (`pages.yml`) uploads the `docs/` folder and deploys with the official Pages actions. A `.nojekyll` file is included so GitHub does not run Jekyll on the static files.
-
-If you previously used the `gh-pages` branch, you can ignore red **"pages build and deployment"** runs on that branch — they are from the old setup.
+Our workflow **Deploy Dashboard to GitHub Pages** (`pages.yml`) pushes `docs/` to the `gh-pages` branch. A `.nojekyll` file is included so GitHub does not run Jekyll on the static files.
 
 **Portfolio checklist:** [PORTFOLIO.md](PORTFOLIO.md)
 
