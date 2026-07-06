@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30",
+  "generated_at": "2026-07-06",
   "kpis": {
     "routes": 66316,
     "airports": 7698,
@@ -25,6 +25,8 @@
       "city": "Atlanta",
       "country": "United States",
       "iata": "ATL",
+      "latitude": 33.6367,
+      "longitude": -84.428101,
       "routes": 1826
     },
     {
@@ -32,6 +34,8 @@
       "city": "Chicago",
       "country": "United States",
       "iata": "ORD",
+      "latitude": 41.9786,
+      "longitude": -87.9048,
       "routes": 1108
     },
     {
@@ -39,6 +43,8 @@
       "city": "Beijing",
       "country": "China",
       "iata": "PEK",
+      "latitude": 40.080101,
+      "longitude": 116.584999,
       "routes": 1061
     },
     {
@@ -46,6 +52,8 @@
       "city": "London",
       "country": "United Kingdom",
       "iata": "LHR",
+      "latitude": 51.4706,
+      "longitude": -0.461941,
       "routes": 1047
     },
     {
@@ -53,6 +61,8 @@
       "city": "Paris",
       "country": "France",
       "iata": "CDG",
+      "latitude": 49.012798,
+      "longitude": 2.55,
       "routes": 1041
     },
     {
@@ -60,6 +70,8 @@
       "city": "Frankfurt",
       "country": "Germany",
       "iata": "FRA",
+      "latitude": 50.033333,
+      "longitude": 8.570556,
       "routes": 990
     },
     {
@@ -67,6 +79,8 @@
       "city": "Los Angeles",
       "country": "United States",
       "iata": "LAX",
+      "latitude": 33.942501,
+      "longitude": -118.407997,
       "routes": 986
     },
     {
@@ -74,6 +88,8 @@
       "city": "Dallas-Fort Worth",
       "country": "United States",
       "iata": "DFW",
+      "latitude": 32.896801,
+      "longitude": -97.038002,
       "routes": 936
     },
     {
@@ -81,6 +97,8 @@
       "city": "New York",
       "country": "United States",
       "iata": "JFK",
+      "latitude": 40.639801,
+      "longitude": -73.7789,
       "routes": 911
     },
     {
@@ -88,6 +106,8 @@
       "city": "Amsterdam",
       "country": "Netherlands",
       "iata": "AMS",
+      "latitude": 52.308601,
+      "longitude": 4.76389,
       "routes": 903
     }
   ],
@@ -397,6 +417,10 @@
       "to_iata": "ATL",
       "from_city": "Chicago",
       "to_city": "Atlanta",
+      "from_lat": 41.9786,
+      "from_lon": -87.9048,
+      "to_lat": 33.6367,
+      "to_lon": -84.428101,
       "routes": 20
     },
     {
@@ -404,6 +428,10 @@
       "to_iata": "ORD",
       "from_city": "Atlanta",
       "to_city": "Chicago",
+      "from_lat": 33.6367,
+      "from_lon": -84.428101,
+      "to_lat": 41.9786,
+      "to_lon": -87.9048,
       "routes": 19
     },
     {
@@ -411,6 +439,10 @@
       "to_iata": "BKK",
       "from_city": "Phuket",
       "to_city": "Bangkok",
+      "from_lat": 8.1132,
+      "from_lon": 98.316902,
+      "to_lat": 13.6811,
+      "to_lon": 100.747002,
       "routes": 13
     },
     {
@@ -418,13 +450,54 @@
       "to_iata": "MSY",
       "from_city": "Chicago",
       "to_city": "New Orleans",
+      "from_lat": 41.9786,
+      "from_lon": -87.9048,
+      "to_lat": 29.993401,
+      "to_lon": -90.258003,
       "routes": 13
     },
     {
-      "from_iata": "DOH",
-      "to_iata": "BAH",
-      "from_city": "Doha",
-      "to_city": "Bahrain",
+      "from_iata": "JFK",
+      "to_iata": "LHR",
+      "from_city": "New York",
+      "to_city": "London",
+      "from_lat": 40.639801,
+      "from_lon": -73.7789,
+      "to_lat": 51.4706,
+      "to_lon": -0.461941,
+      "routes": 12
+    },
+    {
+      "from_iata": "LHR",
+      "to_iata": "JFK",
+      "from_city": "London",
+      "to_city": "New York",
+      "from_lat": 51.4706,
+      "from_lon": -0.461941,
+      "to_lat": 40.639801,
+      "to_lon": -73.7789,
+      "routes": 12
+    },
+    {
+      "from_iata": "MIA",
+      "to_iata": "ATL",
+      "from_city": "Miami",
+      "to_city": "Atlanta",
+      "from_lat": 25.7932,
+      "from_lon": -80.290604,
+      "to_lat": 33.6367,
+      "to_lon": -84.428101,
+      "routes": 12
+    },
+    {
+      "from_iata": "AUH",
+      "to_iata": "MCT",
+      "from_city": "Abu Dhabi",
+      "to_city": "Muscat",
+      "from_lat": 24.433001,
+      "from_lon": 54.6511,
+      "to_lat": 23.5933,
+      "to_lon": 58.284401,
       "routes": 12
     },
     {
@@ -432,20 +505,10 @@
       "to_iata": "BKK",
       "from_city": "Hong Kong",
       "to_city": "Bangkok",
-      "routes": 12
-    },
-    {
-      "from_iata": "ATL",
-      "to_iata": "MIA",
-      "from_city": "Atlanta",
-      "to_city": "Miami",
-      "routes": 12
-    },
-    {
-      "from_iata": "BKK",
-      "to_iata": "HKG",
-      "from_city": "Bangkok",
-      "to_city": "Hong Kong",
+      "from_lat": 22.308901,
+      "from_lon": 113.915001,
+      "to_lat": 13.6811,
+      "to_lon": 100.747002,
       "routes": 12
     },
     {
@@ -453,13 +516,32 @@
       "to_iata": "HGH",
       "from_city": "Guangzhou",
       "to_city": "Hangzhou",
+      "from_lat": 23.392401,
+      "from_lon": 113.299004,
+      "to_lat": 30.2295,
+      "to_lon": 120.433998,
       "routes": 12
     },
     {
-      "from_iata": "JFK",
-      "to_iata": "LHR",
-      "from_city": "New York",
-      "to_city": "London",
+      "from_iata": "DOH",
+      "to_iata": "BAH",
+      "from_city": "Doha",
+      "to_city": "Bahrain",
+      "from_lat": 25.273056,
+      "from_lon": 51.608056,
+      "to_lat": 26.2708,
+      "to_lon": 50.633598,
+      "routes": 12
+    },
+    {
+      "from_iata": "ATL",
+      "to_iata": "MIA",
+      "from_city": "Atlanta",
+      "to_city": "Miami",
+      "from_lat": 33.6367,
+      "from_lon": -84.428101,
+      "to_lat": 25.7932,
+      "to_lon": -80.290604,
       "routes": 12
     }
   ],
