@@ -6,3 +6,6 @@ contact_links:
   - name: Live dashboard
     url: https://gvarun20.github.io/openflights-pipeline/
     about: Try the static demo dashboard
+  - name: Leave dashboard feedback
+    url: https://github.com/gvarun20/openflights-pipeline/issues/new?template=feedback.yml
+    about: Share thoughts on the project (or use the form on the live dashboard)

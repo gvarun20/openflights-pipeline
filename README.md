@@ -2,6 +2,7 @@
 
 [![CI Pipeline](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/gvarun20/openflights-pipeline/actions/workflows/ci.yml)
 [![Live Dashboard](https://img.shields.io/badge/demo-GitHub%20Pages-3b82f6?style=flat&logo=github)](https://gvarun20.github.io/openflights-pipeline/)
+[![Visitor feedback](https://img.shields.io/github/issues-search/gvarun20/openflights-pipeline?query=label%3Afeedback&label=visitor%20feedback)](https://github.com/gvarun20/openflights-pipeline/issues?q=label%3Afeedback)
 
 > **MSc portfolio demo** · 66,316 flight routes · PostgreSQL · Python ETL · free dashboard  
 > *Built to show coursework skills — not a production airline system*
@@ -16,13 +17,42 @@
 
 ---
 
-## Watch the demo (optional — Loom)
+## How I built this
 
-Record a ~2 min walkthrough on [Loom](https://www.loom.com) and paste your link here:
+A short walkthrough for recruiters and classmates — **£0 total cost**, everything runs on free tiers.
+
+| Step | What I did | Tools |
+|------|------------|-------|
+| 1 | Downloaded raw OpenFlights `.dat` files | OpenFlights.org |
+| 2 | Parsed messy CSV (`\N` nulls, orphan IDs) into clean rows | Python |
+| 3 | Loaded a **star schema** (dims + `fact_routes`) | PostgreSQL |
+| 4 | Added **13 Soda checks** so bad data fails before publish | Soda Core |
+| 5 | Wrote **23 pytest tests** (unit + integration) | pytest |
+| 6 | Wrapped it in **Docker Compose** for one-command runs | Docker |
+| 7 | Automated test → ETL → quality → deploy in **GitHub Actions** | CI/CD |
+| 8 | Exported SQL metrics to JSON and built a **live dashboard** | Chart.js + Leaflet map |
+| 9 | Added a **feedback form** so visitors can leave thoughts | GitHub Issues |
+
+**Design choice:** static GitHub Pages dashboard (not Streamlit) — fast, free, and easy to share in a CV link.
+
+**Honest scope:** demo-scale data (~66k routes), not a production airline platform.
+
+---
+
+## Watch the demo (Loom — 2 minutes)
+
+Record a walkthrough on [Loom](https://www.loom.com) (free), then replace `YOUR_LOOM_URL` below:
 
 [![Demo video](https://img.shields.io/badge/▶_Watch-Loom_demo-625DF5?style=for-the-badge&logo=loom&logoColor=white)](YOUR_LOOM_URL)
 
-**Quick script:** show dashboard → show GitHub repo + green CI badge → say it's a student demo project.
+**Recording checklist (~2 min):**
+1. Open the [live dashboard](https://gvarun20.github.io/openflights-pipeline/) — show map, charts, status bar (20 sec)
+2. Scroll to **Feedback** — explain visitors can leave comments via GitHub (15 sec)
+3. Open the [GitHub repo](https://github.com/gvarun20/openflights-pipeline) — point at green CI badge (20 sec)
+4. Quick peek: `etl/`, `quality/checks.yml`, `docs/index.html` (30 sec)
+5. Say it's an **MSc portfolio demo**, not live airline ops (10 sec)
+
+**After recording:** paste your Loom share link into `README.md` where it says `YOUR_LOOM_URL`.
 
 ---
 
@@ -73,7 +103,9 @@ cd openflights-pipeline
 | [METADATA.md](METADATA.md) | What each table/column means |
 | [PORTFOLIO.md](PORTFOLIO.md) | CV / LinkedIn snippets |
 | [docs/GITHUB_PROFILE_README.md](docs/GITHUB_PROFILE_README.md) | GitHub profile README template |
-| Issue templates | Data bug · Enhancement idea |
+| Issue templates | Data bug · Enhancement · Dashboard feedback |
+
+**One-time setup (repo owner):** create a **`feedback`** label — GitHub → **Issues → Labels → New label** → name: `feedback`, colour: blue. This lets the dashboard feedback badge and issue filter work cleanly.
 
 ---
 
