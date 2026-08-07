@@ -49,7 +49,7 @@ Public [OpenFlights](https://openflights.org/data.html) data → Python ETL → 
 |---|---:|
 | Routes loaded | 66,316 |
 | Tests | 23 |
-| Soda checks | 8 |
+| Soda checks | 13 |
 | Busiest hub | ATL |
 | Hosting cost | £0 |
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30",
+  "generated_at": "2026-08-07",
   "kpis": {
     "routes": 66316,
     "airports": 7698,
@@ -25,70 +25,90 @@
       "city": "Atlanta",
       "country": "United States",
       "iata": "ATL",
-      "routes": 1826
+      "routes": 1826,
+      "latitude": 33.6367,
+      "longitude": -84.428101
     },
     {
       "name": "Chicago O'Hare International Airport",
       "city": "Chicago",
       "country": "United States",
       "iata": "ORD",
-      "routes": 1108
+      "routes": 1108,
+      "latitude": 41.9786,
+      "longitude": -87.9048
     },
     {
       "name": "Beijing Capital International Airport",
       "city": "Beijing",
       "country": "China",
       "iata": "PEK",
-      "routes": 1061
+      "routes": 1061,
+      "latitude": 40.080101013183594,
+      "longitude": 116.58499908447266
     },
     {
       "name": "London Heathrow Airport",
       "city": "London",
       "country": "United Kingdom",
       "iata": "LHR",
-      "routes": 1047
+      "routes": 1047,
+      "latitude": 51.4706,
+      "longitude": -0.461941
     },
     {
       "name": "Charles de Gaulle International Airport",
       "city": "Paris",
       "country": "France",
       "iata": "CDG",
-      "routes": 1041
+      "routes": 1041,
+      "latitude": 49.012798,
+      "longitude": 2.55
     },
     {
       "name": "Frankfurt am Main Airport",
       "city": "Frankfurt",
       "country": "Germany",
       "iata": "FRA",
-      "routes": 990
+      "routes": 990,
+      "latitude": 50.033333,
+      "longitude": 8.570556
     },
     {
       "name": "Los Angeles International Airport",
       "city": "Los Angeles",
       "country": "United States",
       "iata": "LAX",
-      "routes": 986
+      "routes": 986,
+      "latitude": 33.94250107,
+      "longitude": -118.4079971
     },
     {
       "name": "Dallas Fort Worth International Airport",
       "city": "Dallas-Fort Worth",
       "country": "United States",
       "iata": "DFW",
-      "routes": 936
+      "routes": 936,
+      "latitude": 32.896801,
+      "longitude": -97.038002
     },
     {
       "name": "John F Kennedy International Airport",
       "city": "New York",
       "country": "United States",
       "iata": "JFK",
-      "routes": 911
+      "routes": 911,
+      "latitude": 40.63980103,
+      "longitude": -73.77890015
     },
     {
       "name": "Amsterdam Airport Schiphol",
       "city": "Amsterdam",
       "country": "Netherlands",
       "iata": "AMS",
-      "routes": 903
+      "routes": 903,
+      "latitude": 52.308601,
+      "longitude": 4.76389
     }
   ],
   "top_airlines": [
@@ -397,70 +417,110 @@
       "to_iata": "ATL",
       "from_city": "Chicago",
       "to_city": "Atlanta",
-      "routes": 20
+      "routes": 20,
+      "from_lat": 41.9786,
+      "from_lon": -87.9048,
+      "to_lat": 33.6367,
+      "to_lon": -84.428101
     },
     {
       "from_iata": "ATL",
       "to_iata": "ORD",
       "from_city": "Atlanta",
       "to_city": "Chicago",
-      "routes": 19
+      "routes": 19,
+      "from_lat": 33.6367,
+      "from_lon": -84.428101,
+      "to_lat": 41.9786,
+      "to_lon": -87.9048
     },
     {
       "from_iata": "HKT",
       "to_iata": "BKK",
       "from_city": "Phuket",
       "to_city": "Bangkok",
-      "routes": 13
+      "routes": 13,
+      "from_lat": 8.1132,
+      "from_lon": 98.316902,
+      "to_lat": 13.681099891662598,
+      "to_lon": 100.74700164794922
     },
     {
       "from_iata": "ORD",
       "to_iata": "MSY",
       "from_city": "Chicago",
       "to_city": "New Orleans",
-      "routes": 13
+      "routes": 13,
+      "from_lat": 41.9786,
+      "from_lon": -87.9048,
+      "to_lat": 29.99340057373047,
+      "to_lon": -90.25800323486328
     },
     {
       "from_iata": "DOH",
       "to_iata": "BAH",
       "from_city": "Doha",
       "to_city": "Bahrain",
-      "routes": 12
+      "routes": 12,
+      "from_lat": 25.273056,
+      "from_lon": 51.608056,
+      "to_lat": 26.27079963684082,
+      "to_lon": 50.63359832763672
     },
     {
       "from_iata": "HKG",
       "to_iata": "BKK",
       "from_city": "Hong Kong",
       "to_city": "Bangkok",
-      "routes": 12
+      "routes": 12,
+      "from_lat": 22.308901,
+      "from_lon": 113.915001,
+      "to_lat": 13.681099891662598,
+      "to_lon": 100.74700164794922
     },
     {
       "from_iata": "ATL",
       "to_iata": "MIA",
       "from_city": "Atlanta",
       "to_city": "Miami",
-      "routes": 12
+      "routes": 12,
+      "from_lat": 33.6367,
+      "from_lon": -84.428101,
+      "to_lat": 25.79319953918457,
+      "to_lon": -80.29060363769531
     },
     {
       "from_iata": "BKK",
       "to_iata": "HKG",
       "from_city": "Bangkok",
       "to_city": "Hong Kong",
-      "routes": 12
+      "routes": 12,
+      "from_lat": 13.681099891662598,
+      "from_lon": 100.74700164794922,
+      "to_lat": 22.308901,
+      "to_lon": 113.915001
     },
     {
       "from_iata": "CAN",
       "to_iata": "HGH",
       "from_city": "Guangzhou",
       "to_city": "Hangzhou",
-      "routes": 12
+      "routes": 12,
+      "from_lat": 23.39240074157715,
+      "from_lon": 113.29900360107422,
+      "to_lat": 30.22949981689453,
+      "to_lon": 120.43399810791016
     },
     {
       "from_iata": "JFK",
       "to_iata": "LHR",
       "from_city": "New York",
       "to_city": "London",
-      "routes": 12
+      "routes": 12,
+      "from_lat": 40.63980103,
+      "from_lon": -73.77890015,
+      "to_lat": 51.4706,
+      "to_lon": -0.461941
     }
   ],
   "top_network_hubs": [
@@ -543,5 +603,13 @@
     "US domestic": 10484,
     "Rest of world": 50831,
     "Involves US (intl)": 5001
+  },
+  "pipeline_status": {
+    "last_export_utc": "2026-08-07 19:00 UTC",
+    "generated_at": "2026-08-07",
+    "quality_passed": true,
+    "routes_loaded": 66316,
+    "soda_checks": 13,
+    "status": "healthy"
   }
 }

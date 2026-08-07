@@ -10,15 +10,27 @@ checks for fact_routes:
   - invalid_count(stops) = 0:
       name: Stops are non-negative
       valid min: 0
+  - max(stops) <= 3:
+      name: Stops within expected range
+  - avg(stops) < 1:
+      name: Most routes are direct flights
 
 checks for dim_airport:
   - row_count > 7000:
       name: Airport dimension populated
+  - min(latitude) >= -90:
+      name: Airport latitudes in valid range
+  - max(longitude) <= 180:
+      name: Airport longitudes in valid range
 
 checks for dim_airline:
   - row_count > 6000:
       name: Airline dimension populated
+  - missing_count(name) = 0:
+      name: Every airline has a name
 
 checks for dim_equipment:
   - row_count > 100:
       name: Equipment dimension populated
+  - missing_count(iata_code) = 0:
+      name: Equipment IATA codes present

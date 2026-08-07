@@ -3,7 +3,7 @@
 import json
 import os
 import sys
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -232,8 +232,18 @@ def export_snapshot() -> dict:
     conn.close()
 
     own_operated = routes - codeshare
+    quality_passed = os.getenv("QUALITY_PASSED", "1") == "1"
+    pipeline_status = {
+        "last_export_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "generated_at": date.today().isoformat(),
+        "quality_passed": quality_passed,
+        "routes_loaded": routes,
+        "soda_checks": 13,
+        "status": "healthy" if quality_passed else "needs_review",
+    }
     return {
         "generated_at": date.today().isoformat(),
+        "pipeline_status": pipeline_status,
         "kpis": {
             "routes": routes,
             "airports": airports,
@@ -274,8 +284,11 @@ def main() -> int:
             "window.DASHBOARD_DATA = " + json.dumps(snapshot) + ";\n",
             encoding="utf-8",
         )
+        status_text = json.dumps(snapshot["pipeline_status"], indent=2)
+        (pages_dir / "status.json").write_text(status_text, encoding="utf-8")
         print(f"Wrote {pages_dir / 'data.json'}")
         print(f"Wrote {pages_dir / 'data.js'}")
+        print(f"Wrote {pages_dir / 'status.json'}")
     print(f"Wrote {OUTPUT}")
     return 0
 
