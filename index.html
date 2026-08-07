@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OpenFlights Data Warehouse — Live Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     :root {
       --bg: #0e1117; --card: #1a1f2e; --border: #2d3548;
@@ -51,6 +52,21 @@
       border-top: 1px solid var(--border); margin-top: 1rem; }
     footer a { color: var(--accent); text-decoration: none; }
     .updated { text-align: right; color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; }
+    .status-bar {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center;
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.82rem; color: var(--muted);
+    }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .status-pill.ok { border-color: var(--green); color: var(--green); }
+    .status-pill.warn { border-color: #f59e0b; color: #f59e0b; }
+    .map-wrap { height: 420px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--card); color: var(--text); }
+    .leaflet-container { background: #0e1117; font-family: inherit; }
     .comments-card { margin-top: 0.5rem; }
     .comments-card .subtitle { margin-bottom: 0.75rem; }
     .feedback-form { display: flex; flex-direction: column; gap: 0.75rem; }
@@ -97,7 +113,8 @@
   </header>
 
   <main>
-    <p class="updated" id="updated">Loading…</p>
+    <div class="status-bar" id="statusBar">Loading pipeline status…</div>
+
     <p class="section-title">Overview</p>
     <section class="kpis" id="kpis"></section>
 
@@ -105,6 +122,13 @@
       <h2>💡 Key insights</h2>
       <ul id="insights"></ul>
     </section>
+
+    <p class="section-title">Global hub map</p>
+    <div class="card">
+      <h2>Top airport hubs worldwide</h2>
+      <p class="subtitle">Bubble size = route volume · dashed lines = top 5 busiest airport pairs (free OpenStreetMap tiles)</p>
+      <div id="hubMap" class="map-wrap"></div>
+    </div>
 
     <p class="section-title">Route types</p>
     <div class="grid-2">
@@ -222,6 +246,7 @@
   </footer>
 
   <script src="data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
   <script defer>
     const fmt = (n) => Number(n).toLocaleString("en-US");
@@ -255,9 +280,70 @@
     };
 
     function showError(msg) {
-      const el = document.getElementById("updated");
+      const el = document.getElementById("statusBar");
       el.textContent = "Error: " + msg;
       el.style.color = "#ef4444";
+    }
+
+    function renderStatus(data) {
+      const ps = data.pipeline_status;
+      const el = document.getElementById("statusBar");
+      if (!ps) {
+        el.innerHTML = `<span class="status-pill">Data snapshot: ${data.generated_at}</span>`;
+        return;
+      }
+      const qualityClass = ps.quality_passed ? "ok" : "warn";
+      const qualityLabel = ps.quality_passed ? "✓ Soda quality passed" : "⚠ Quality not verified";
+      el.innerHTML = [
+        `<span class="status-pill ${qualityClass}">${qualityLabel}</span>`,
+        `<span class="status-pill">${fmt(ps.routes_loaded)} routes loaded</span>`,
+        `<span class="status-pill">${ps.soda_checks} data checks</span>`,
+        `<span class="status-pill">Snapshot: ${ps.generated_at || data.generated_at}</span>`,
+        `<span class="status-pill">Exported: ${ps.last_export_utc}</span>`,
+      ].join("");
+    }
+
+    function renderMap(data) {
+      const airports = (data.top_airports || []).filter(
+        (a) => a.latitude != null && a.longitude != null
+      );
+      if (!airports.length || typeof L === "undefined") return;
+
+      const map = L.map("hubMap", { scrollWheelZoom: false }).setView([25, 10], 2);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        subdomains: "abcd",
+        maxZoom: 19,
+      }).addTo(map);
+
+      const maxRoutes = Math.max(...airports.map((a) => a.routes));
+      airports.forEach((a) => {
+        const radius = 6 + (a.routes / maxRoutes) * 18;
+        L.circleMarker([a.latitude, a.longitude], {
+          radius,
+          fillColor: "#3b82f6",
+          color: "#93c5fd",
+          weight: 1,
+          fillOpacity: 0.78,
+        })
+          .bindPopup(
+            `<strong>${a.city} (${a.iata})</strong><br>${a.country}<br>${fmt(a.routes)} connections`
+          )
+          .addTo(map);
+      });
+
+      (data.top_route_pairs || []).slice(0, 5).forEach((p) => {
+        if (p.from_lat == null || p.to_lat == null) return;
+        L.polyline(
+          [
+            [p.from_lat, p.from_lon],
+            [p.to_lat, p.to_lon],
+          ],
+          { color: "#6366f1", weight: 1.5, opacity: 0.45, dashArray: "4 6" }
+        ).addTo(map);
+      });
+
+      setTimeout(() => map.invalidateSize(), 150);
     }
 
     function doughnut(id, labels, values, colors) {
@@ -270,7 +356,7 @@
 
     function render(data) {
       const k = data.kpis;
-      document.getElementById("updated").textContent = "Data snapshot: " + data.generated_at;
+      renderStatus(data);
 
       document.getElementById("kpis").innerHTML = [
         ["Total routes", k.routes], ["Airports", k.airports], ["Airlines", k.airlines],
@@ -351,6 +437,7 @@
       });
 
       doughnut("activeChart", ["Active airlines", "Inactive airlines"], [k.active_airlines, k.inactive_airlines], ["#22c55e", "#64748b"]);
+      renderMap(data);
     }
 
     async function loadData() {
@@ -363,7 +450,7 @@
     function boot() {
       loadData()
         .then((data) => {
-          if (typeof Chart === "undefined") throw new Error("Chart.js failed to load \u2014 check your network connection");
+          if (typeof Chart === "undefined") throw new Error("Chart.js failed to load — check your network connection");
           render(data);
         })
         .catch((err) => showError(err.message || String(err)));
