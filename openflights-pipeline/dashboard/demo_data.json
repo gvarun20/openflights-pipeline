@@ -1,5 +1,13 @@
 {
-  "generated_at": "2026-08-03",
+  "generated_at": "2026-08-10",
+  "pipeline_status": {
+    "last_export_utc": "2026-08-10 07:14 UTC",
+    "generated_at": "2026-08-10",
+    "quality_passed": true,
+    "routes_loaded": 66316,
+    "soda_checks": 13,
+    "status": "healthy"
+  },
   "kpis": {
     "routes": 66316,
     "airports": 7698,
