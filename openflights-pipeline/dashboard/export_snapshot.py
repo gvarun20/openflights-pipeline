@@ -12,6 +12,13 @@ from etl.db import connect
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = Path(__file__).resolve().parent / "demo_data.json"
+CHECKS_FILE = PROJECT_ROOT / "quality" / "checks.yml"
+
+
+def count_soda_checks() -> int:
+    return sum(
+        1 for line in CHECKS_FILE.read_text(encoding="utf-8").splitlines() if line.startswith("  - ")
+    )
 
 
 def export_snapshot() -> dict:
@@ -47,7 +54,7 @@ def export_snapshot() -> dict:
         FROM airport_traffic t
         JOIN dim_airport a ON a.airport_id = t.airport_id
         GROUP BY a.name, a.city, a.country, a.iata_code, a.latitude, a.longitude
-        ORDER BY 7 DESC LIMIT 10
+        ORDER BY 7 DESC LIMIT 20
         """
     )
     top_airports = [
@@ -238,7 +245,7 @@ def export_snapshot() -> dict:
         "generated_at": date.today().isoformat(),
         "quality_passed": quality_passed,
         "routes_loaded": routes,
-        "soda_checks": 13,
+        "soda_checks": count_soda_checks(),
         "status": "healthy" if quality_passed else "needs_review",
     }
     return {

@@ -10,6 +10,15 @@ DEMO = ROOT / "dashboard" / "demo_data.json"
 DOCS = ROOT.parent / "docs"
 
 
+CHECKS_FILE = ROOT / "quality" / "checks.yml"
+
+
+def count_soda_checks() -> int:
+    return sum(
+        1 for line in CHECKS_FILE.read_text(encoding="utf-8").splitlines() if line.startswith("  - ")
+    )
+
+
 def main() -> int:
     if not DEMO.exists():
         print(f"Missing {DEMO}", file=sys.stderr)
@@ -22,7 +31,7 @@ def main() -> int:
         "generated_at": today,
         "quality_passed": True,
         "routes_loaded": data["kpis"]["routes"],
-        "soda_checks": 13,
+        "soda_checks": count_soda_checks(),
         "status": "healthy",
     }
     data["generated_at"] = today

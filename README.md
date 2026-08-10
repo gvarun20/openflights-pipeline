@@ -26,7 +26,7 @@ A short walkthrough for recruiters and classmates — **£0 total cost**, everyt
 | 1 | Downloaded raw OpenFlights `.dat` files | OpenFlights.org |
 | 2 | Parsed messy CSV (`\N` nulls, orphan IDs) into clean rows | Python |
 | 3 | Loaded a **star schema** (dims + `fact_routes`) | PostgreSQL |
-| 4 | Added **13 Soda checks** so bad data fails before publish | Soda Core |
+| 4 | Added **14 Soda checks** so bad data fails before publish | Soda Core |
 | 5 | Wrote **23 pytest tests** (unit + integration) | pytest |
 | 6 | Wrapped it in **Docker Compose** for one-command runs | Docker |
 | 7 | Automated test → ETL → quality → deploy in **GitHub Actions** | CI/CD |
@@ -39,9 +39,11 @@ A short walkthrough for recruiters and classmates — **£0 total cost**, everyt
 
 ---
 
-## Watch the demo (Loom — 2 minutes)
+## Watch the demo
 
-Record a walkthrough on [Loom](https://www.loom.com) (free), then replace `YOUR_LOOM_URL` below:
+**Live dashboard (works now):** [![Open live demo](https://img.shields.io/badge/▶_Open-live_dashboard-3b82f6?style=for-the-badge&logo=github)](https://gvarun20.github.io/openflights-pipeline/)
+
+**Loom walkthrough (optional):** record ~2 min on [Loom](https://www.loom.com) (free), then replace `YOUR_LOOM_URL`:
 
 [![Demo video](https://img.shields.io/badge/▶_Watch-Loom_demo-625DF5?style=for-the-badge&logo=loom&logoColor=white)](YOUR_LOOM_URL)
 
@@ -79,7 +81,7 @@ Public [OpenFlights](https://openflights.org/data.html) data → Python ETL → 
 |---|---:|
 | Routes loaded | 66,316 |
 | Tests | 23 |
-| Soda checks | 13 |
+| Soda checks | 14 |
 | Busiest hub | ATL |
 | Hosting cost | £0 |
 
@@ -105,7 +107,7 @@ cd openflights-pipeline
 | [docs/GITHUB_PROFILE_README.md](docs/GITHUB_PROFILE_README.md) | GitHub profile README template |
 | Issue templates | Data bug · Enhancement · Dashboard feedback |
 
-**One-time setup (repo owner):** create a **`feedback`** label — GitHub → **Issues → Labels → New label** → name: `feedback`, colour: blue. This lets the dashboard feedback badge and issue filter work cleanly.
+**One-time setup (repo owner):** the **`feedback`** label is created automatically by `scripts/create_feedback_label.ps1` (or GitHub → Issues → Labels). Submit one test comment from the dashboard feedback form to verify the flow.
 
 ---
 

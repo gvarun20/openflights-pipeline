@@ -19,7 +19,7 @@ MSc student · learning **data engineering** through hands-on demo projects
 What it does:
 - Loads **66,000+** flight routes into PostgreSQL
 - Uses a **star schema** (coursework-style warehouse design)
-- Runs **23 tests + 13 Soda checks** in GitHub Actions
+- Runs **23 tests + 14 Soda checks** in GitHub Actions
 - Publishes a **free dashboard** with charts, hub map, and visitor feedback
 
 > Demo / portfolio project — not a real airline system.

@@ -1,0 +1,44 @@
+name: Setup dashboard feedback
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/setup-feedback.yml
+
+permissions:
+  issues: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create feedback label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create feedback \
+            --repo ${{ github.repository }} \
+            --description "Visitor feedback from the live dashboard" \
+            --color 3b82f6 \
+            --force
+
+      - name: Create welcome feedback issue if none exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT=$(gh issue list --repo ${{ github.repository }} --label feedback --state all --json number --jq 'length')
+          if [ "$COUNT" -eq 0 ]; then
+            gh issue create --repo ${{ github.repository }} \
+              --title "Dashboard feedback" \
+              --label feedback \
+              --body "**From:** Portfolio demo (welcome message)
+
+          This thread collects visitor feedback from the [live dashboard](https://gvarun20.github.io/openflights-pipeline/).
+
+          Use the feedback form on the dashboard, or comment here directly.
+
+          ---
+          *Auto-created to verify the feedback flow works.*"
+          fi
