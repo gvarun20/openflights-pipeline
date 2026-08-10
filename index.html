@@ -126,7 +126,7 @@
     <p class="section-title">Global hub map</p>
     <div class="card">
       <h2>Top airport hubs worldwide</h2>
-      <p class="subtitle">Bubble size = route volume · dashed lines = top 5 busiest airport pairs (free OpenStreetMap tiles)</p>
+      <p class="subtitle">20 busiest hubs · bubble size = route volume · dashed lines = top 5 airport pairs</p>
       <div id="hubMap" class="map-wrap"></div>
     </div>
 
@@ -378,10 +378,17 @@
       doughnut("scopeChart", Object.keys(data.route_scope), Object.values(data.route_scope), ["#6366f1", "#3b82f6"]);
       doughnut("codeshareChart", Object.keys(data.codeshare_split), Object.values(data.codeshare_split), ["#f59e0b", "#22c55e"]);
 
-      const aptLabels = data.top_airports.map((a) => `${a.city}, ${a.country}`);
+      const aptLabels = data.top_airports.slice(0, 10).map((a) => `${a.city}, ${a.country}`);
       new Chart(document.getElementById("airportsChart"), {
         type: "bar",
-        data: { labels: aptLabels, datasets: [{ data: data.top_airports.map((a) => a.routes), backgroundColor: "#3b82f6", borderRadius: 4 }] },
+        data: {
+          labels: aptLabels,
+          datasets: [{
+            data: data.top_airports.slice(0, 10).map((a) => a.routes),
+            backgroundColor: "#3b82f6",
+            borderRadius: 4,
+          }],
+        },
         options: hBarOpts(),
       });
 
