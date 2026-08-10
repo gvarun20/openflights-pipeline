@@ -14,10 +14,22 @@
 | **CI runs** | https://github.com/gvarun20/openflights-pipeline/actions |
 | **Routes loaded** | **66,316** |
 | **Automated tests** | **23** (18 unit + 5 integration) |
-| **Data quality checks** | **8** (Soda Core) |
+| **Data quality checks** | **14** (Soda Core) |
+| **Visitor feedback** | [Issues with label `feedback`](https://github.com/gvarun20/openflights-pipeline/issues?q=label%3Afeedback) |
 | **License** | MIT |
 
 ---
+
+## Who should read what
+
+| Audience | Sections to read | Goal |
+|----------|------------------|------|
+| **Non-technical** (recruiter, manager) | §1, §2, §14, [README](README.md) | Understand the problem, outcome, and live demo |
+| **MSc reviewer / classmate** | §1–§3, §7, §14, [METADATA.md](METADATA.md) | Follow project progression and data model |
+| **Data engineer / developer** | Full document + `quality/checks.yml` + `tests/` | Reproduce, extend, or interview on implementation |
+| **Portfolio / CV** | [PORTFOLIO.md](PORTFOLIO.md) | Copy links and talking points |
+
+**Plain-language summary:** OpenFlights flat files are turned into a trusted PostgreSQL warehouse, validated automatically, and published as a free public dashboard anyone can open in a browser.
 
 ## Table of contents
 
@@ -228,7 +240,7 @@ The project was built incrementally. Each phase added a layer that real data tea
 
 | Deliverable | Purpose |
 |-------------|---------|
-| `quality/checks.yml` | 8 Soda Core data quality rules |
+| `quality/checks.yml` | 14 Soda Core data quality rules |
 | `quality/run_checks.py` | Execute checks after ETL |
 | `tests/test_integration.py` | 5 tests against real PostgreSQL |
 | `etl/run_etl.py --validate` | ETL + quality in one step |
@@ -236,6 +248,26 @@ The project was built incrementally. Each phase added a layer that real data tea
 | `scripts/run_pipeline.ps1` | One-command local pipeline |
 
 **Outcome:** Automated validation in CI; weekly dashboard refresh; documented quality framework.
+
+---
+
+### Phase 6 — Portfolio polish (map, status, feedback)
+
+**Objective:** Make the public demo memorable and interactive for recruiters — still **£0 cost**.
+
+**What was built:**
+
+| Deliverable | Purpose |
+|-------------|---------|
+| **Leaflet hub map** | 20 busiest airports + top 5 route lines on dark OSM tiles |
+| **Pipeline status bar** | Shows quality passed, route count, check count, export time |
+| `docs/status.json` | Lightweight pipeline health file for the dashboard |
+| **Feedback form** | Visitors type comments → pre-filled GitHub Issue |
+| `.github/workflows/setup-feedback.yml` | Auto-creates `feedback` label + welcome issue |
+| `scripts/sync_dashboard_docs.py` | Refresh dashboard JSON without a live database |
+| README + PORTFOLIO polish | “How I built this”, Loom script, documentation map |
+
+**Outcome:** Dashboard tells an operational story (freshness + quality), not just charts.
 
 ---
 
@@ -248,8 +280,9 @@ flowchart LR
   P3["Phase 3\nDocker + CI"]
   P4["Phase 4\nLive Dashboard"]
   P5["Phase 5\nQuality + Integration"]
+  P6["Phase 6\nMap + Feedback"]
 
-  P1 --> P2 --> P3 --> P4 --> P5
+  P1 --> P2 --> P3 --> P4 --> P5 --> P6
 ```
 
 | Phase | Focus | Status |
@@ -259,6 +292,7 @@ flowchart LR
 | 3 | Docker, pytest, GitHub Actions CI | ✅ Complete |
 | 4 | GitHub Pages dashboard, documentation | ✅ Complete |
 | 5 | Soda quality, integration tests, scheduled pipeline | ✅ Complete |
+| 6 | Hub map, status bar, visitor feedback, docs polish | ✅ Complete |
 
 ---
 
@@ -295,6 +329,7 @@ flowchart TB
 
   subgraph delivery [Delivery]
     EXP[export_snapshot.py]
+    STATUS[status.json]
     DASH[GitHub Pages Dashboard]
   end
 
@@ -308,6 +343,7 @@ flowchart TB
   FR --> SODA
   FR --> PYTEST
   FR --> EXP --> DASH
+  EXP --> STATUS
   etl_layer --> CI
   SODA --> CI
   etl_layer --> SCHED --> EXP
@@ -502,34 +538,47 @@ Unit tests verify that **parsing functions** work on sample inputs. They do **no
 | ETL hook | `run_etl.py --validate` | Runs checks automatically after load |
 | CI hook | `.github/workflows/ci.yml` | Fails build if checks fail |
 
-### 9.3 All 8 checks — detailed explanation
+### 9.3 All 14 checks — detailed explanation
 
-#### Checks on `fact_routes` (5 checks)
-
-| # | Check name | SodaCL rule | What it validates | Why it matters |
-|---|------------|-------------|-------------------|----------------|
-| 1 | Route count in expected range | `row_count between 65000 and 67000` | Total loaded routes is ~66k | Catches catastrophic load failures (empty table, double load, wrong file) |
-| 2 | No null airline_id | `missing_count(airline_id) = 0` | Every route has an airline | Routes without airlines break airline analytics |
-| 3 | No null source airport | `missing_count(src_airport_id) = 0` | Every route has an origin | Origin-based hub analysis requires this |
-| 4 | No null destination airport | `missing_count(dst_airport_id) = 0` | Every route has a destination | Destination analytics and corridor analysis require this |
-| 5 | Stops are non-negative | `invalid_count(stops) = 0` with `valid min: 0` | No negative stop counts | Negative stops are invalid; indicates parse bug |
-
-**Expected result for check #1:** Exactly **66,316** rows (within 65,000–67,000 bounds).
-
-#### Checks on dimension tables (3 checks)
+#### Checks on `fact_routes` (7 checks)
 
 | # | Check name | SodaCL rule | What it validates | Why it matters |
 |---|------------|-------------|-------------------|----------------|
-| 6 | Airport dimension populated | `row_count > 7000` on `dim_airport` | ~7,698 airports loaded | Empty or partial dimension causes mass FK skips |
-| 7 | Airline dimension populated | `row_count > 6000` on `dim_airline` | ~6,162 airlines loaded | Same as above for airline analytics |
-| 8 | Equipment dimension populated | `row_count > 100` on `dim_equipment` | ~220 aircraft types loaded | Equipment charts depend on this table |
+| 1 | Route count in expected range | `row_count between 65000 and 67000` | Total loaded routes is ~66k | Catches catastrophic load failures |
+| 2 | No null airline_id | `missing_count(airline_id) = 0` | Every route has an airline | Breaks airline analytics if null |
+| 3 | No null source airport | `missing_count(src_airport_id) = 0` | Every route has an origin | Hub analysis requires origins |
+| 4 | No null destination airport | `missing_count(dst_airport_id) = 0` | Every route has a destination | Corridor analysis requires destinations |
+| 5 | Stops are non-negative | `invalid_count(stops) = 0`, `valid min: 0` | No negative stop counts | Indicates parse bugs |
+| 6 | Stops within expected range | `max(stops) <= 3` | Stop count is realistic | Catches corrupted stop values |
+| 7 | Most routes are direct | `avg(stops) < 1` | Average stops below 1 | OpenFlights is mostly direct routes |
+
+#### Checks on `dim_airport` (3 checks)
+
+| # | Check name | SodaCL rule | What it validates | Why it matters |
+|---|------------|-------------|-------------------|----------------|
+| 8 | Airport dimension populated | `row_count > 7000` | ~7,698 airports loaded | Empty dim breaks FK joins |
+| 9 | Airport latitudes in valid range | `min(latitude) >= -90` | Coordinates are plausible | Map and geo analytics |
+| 10 | Airport longitudes in valid range | `max(longitude) <= 180` | Coordinates are plausible | Map and geo analytics |
+
+#### Checks on `dim_airline` (2 checks)
+
+| # | Check name | SodaCL rule | What it validates | Why it matters |
+|---|------------|-------------|-------------------|----------------|
+| 11 | Airline dimension populated | `row_count > 6000` | ~6,162 airlines loaded | Airline charts need data |
+| 12 | Every airline has a name | `missing_count(name) = 0` | No blank airline names | Dashboard labels stay readable |
+
+#### Checks on `dim_equipment` (2 checks)
+
+| # | Check name | SodaCL rule | What it validates | Why it matters |
+|---|------------|-------------|-------------------|----------------|
+| 13 | Equipment dimension populated | `row_count > 100` | ~220 aircraft types loaded | Aircraft charts need data |
+| 14 | Equipment IATA codes present | `missing_count(iata_code) = 0` | Every equipment row has a code | Join keys for fact routes |
 
 ### 9.4 What Soda does NOT check (by design)
 
 | Not checked | Reason |
 |-------------|--------|
 | Duplicate routes | OpenFlights may contain legitimate duplicates (codeshare) |
-| Lat/long bounds | Handled in unit tests; not a load blocker |
 | Referential integrity (orphan FKs) | Enforced at INSERT time; integration tests confirm |
 | Business rules (e.g. “Ryanair is #1”) | Covered by integration tests, not Soda |
 
@@ -549,7 +598,7 @@ py -m etl.run_etl --init --validate
 
 **Example successful output:**
 ```
-8/8 checks PASSED
+14/14 checks PASSED
   fact_routes: Route count in expected range [PASSED]
   fact_routes: No null airline_id [PASSED]
   ...
@@ -570,7 +619,7 @@ All is good. No failures. No warnings. No errors.
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│  Layer 2: DATA QUALITY (8 Soda checks)                        │
+│  Layer 2: DATA QUALITY (14 Soda checks)                       │
 │  Test warehouse tables after load                               │
 │  Validates volume, nulls, basic validity                        │
 └─────────────────────────────────────────────────────────────────┘
@@ -779,7 +828,7 @@ LIMIT 1;
 
 **What it does:** Calls `quality.run_checks()` and asserts exit code `0`.
 
-**What it verifies:** All 8 Soda Core checks pass against the current database state.
+**What it verifies:** All 14 Soda Core checks pass against the current database state.
 
 **Why it is needed:** Ensures the **quality framework itself** runs successfully in the test environment — not just that individual SQL assertions pass. This mirrors exactly what CI runs after ETL via `--validate`.
 
@@ -806,6 +855,7 @@ LIMIT 1;
 | **CI Pipeline** | `ci.yml` | Push / PR to `main`, `develop` | Validate every code change |
 | **Scheduled Pipeline** | `scheduled-etl.yml` | Mon 06:00 UTC + manual | Refresh warehouse snapshot + dashboard |
 | **Deploy Dashboard** | `pages.yml` | Push to `main` | Publish `docs/` to GitHub Pages |
+| **Setup dashboard feedback** | `setup-feedback.yml` | Push (workflow file) / manual | Create `feedback` label + welcome issue |
 
 ### 13.2 CI Pipeline — step-by-step with rationale
 
@@ -845,7 +895,7 @@ DB_PASSWORD=openflights
 |------|--------------|---------------|
 | **1–3. Setup** | Checkout, Python, dependencies | Same as CI |
 | **4. ETL + validate** | Full load + Soda checks | Regenerate fresh warehouse snapshot |
-| **5. Export dashboard** | `export_snapshot.py` → `docs/data.json`, `docs/data.js` | Update dashboard numbers from live SQL |
+| **5. Export dashboard** | `export_snapshot.py` → `data.json`, `data.js`, `status.json` | Update dashboard + pipeline status from live SQL |
 | **6. Commit + push** | Git commit if data changed | Trigger Pages deploy via `pages.yml` |
 
 **Schedule:** Every Monday at 06:00 UTC (`cron: "0 6 * * 1"`)
@@ -874,31 +924,82 @@ DB_PASSWORD=openflights
 | Item | Detail |
 |------|--------|
 | **URL** | https://gvarun20.github.io/openflights-pipeline/ |
-| **Technology** | Static HTML + Chart.js 4.4.1 |
+| **Technology** | Static HTML + Chart.js 4.4.1 + Leaflet 1.9.4 |
 | **Data** | `docs/data.js` (embedded) with fallback to `docs/data.json` |
+| **Pipeline status** | `docs/status.json` + `pipeline_status` object in snapshot |
 | **Cost** | Free on GitHub Pages |
 
-**Charts and tables include:**
-- KPI cards (routes, airports, airlines, international %)
-- Domestic vs international split
-- Top 10 airports, airlines, network hubs
-- Country corridors and directional pairs
-- Routes by country, US traffic, stops distribution
-- Aircraft types, active vs inactive airlines
+**Non-technical view:** open the URL in a browser — no install, no login required to *view* analytics.
 
-### 14.2 Refreshing dashboard data
+**Dashboard sections:**
+
+| Section | What a visitor sees |
+|---------|---------------------|
+| **Status bar** | Quality passed ✓, routes loaded, 14 checks, snapshot & export times |
+| **Overview KPIs** | Routes, airports, airlines, international split, codeshare % |
+| **Hub map** | 20 busiest airports (bubble size = volume) + top 5 route lines |
+| **Route types** | Domestic vs international; codeshare vs own-operated |
+| **Airports & airlines** | Top 10 bar charts; largest network hubs |
+| **International** | Country corridors, directional pairs, airport pairs |
+| **Geography & fleet** | Routes by country, US traffic, stops, aircraft, active airlines |
+| **Feedback** | Type a message → opens GitHub Issue (sign-in required to submit) |
+
+### 14.2 How dashboard data is exported
+
+**File:** `openflights-pipeline/dashboard/export_snapshot.py`
+
+| Output | Purpose |
+|--------|---------|
+| `dashboard/demo_data.json` | Local/offline snapshot |
+| `docs/data.json` | Dashboard fetch fallback |
+| `docs/data.js` | `window.DASHBOARD_DATA` for fast load |
+| `docs/status.json` | Pipeline health only (quality, routes, export time) |
+
+The export query includes **latitude/longitude** for top 20 airports (map) and route-pair coordinates (map lines).
+
+**`pipeline_status` fields:**
+
+| Field | Meaning |
+|-------|---------|
+| `last_export_utc` | When the snapshot was generated |
+| `generated_at` | Snapshot date (ISO) |
+| `quality_passed` | `true` when export runs after `--validate` |
+| `routes_loaded` | Row count from `fact_routes` |
+| `soda_checks` | Auto-counted from `quality/checks.yml` |
+| `status` | `healthy` or `needs_review` |
+
+### 14.3 Refreshing dashboard data
 
 ```powershell
 cd openflights-pipeline
+
+# Full refresh (requires PostgreSQL)
+py -m etl.run_etl --init --validate
 py dashboard/export_snapshot.py
-git add ../docs/data.json ../docs/data.js dashboard/demo_data.json
+
+# Docs-only refresh (no database — uses demo_data.json)
+py scripts/sync_dashboard_docs.py
+
+git add ../docs/data.json ../docs/data.js ../docs/status.json dashboard/demo_data.json
 git commit -m "Update dashboard snapshot"
 git push
 ```
 
-Or wait for the **Scheduled Pipeline** to refresh automatically.
+Or wait for the **Scheduled Pipeline** to refresh automatically every Monday.
 
-### 14.3 GitHub Pages setup note
+### 14.4 Visitor feedback
+
+| Item | Detail |
+|------|--------|
+| **UI** | Form at bottom of `docs/index.html` |
+| **Flow** | Visitor types message → opens GitHub “new issue” with pre-filled body |
+| **Storage** | GitHub Issues with label `feedback` |
+| **Setup** | `.github/workflows/setup-feedback.yml` creates label + welcome issue |
+| **Template** | `.github/ISSUE_TEMPLATE/feedback.yml` |
+
+**For portfolio owners:** the welcome issue proves the flow works — see [issue #2](https://github.com/gvarun20/openflights-pipeline/issues/2).
+
+### 14.5 GitHub Pages setup note
 
 If **CI Pipeline** and **Deploy Dashboard to GitHub Pages** are green, your project CI is healthy.
 
@@ -957,11 +1058,12 @@ openflights-pipeline/          ← GitHub repo root
 ├── .github/workflows/
 │   ├── ci.yml                 ← CI: tests + ETL + quality + Docker
 │   ├── scheduled-etl.yml      ← Weekly refresh
-│   └── pages.yml              ← Dashboard deploy
+│   ├── pages.yml              ← Dashboard deploy
+│   └── setup-feedback.yml     ← Feedback label + welcome issue
 ├── docs/                      ← GitHub Pages dashboard
-│   ├── index.html
-│   ├── data.json
-│   └── data.js
+│   ├── index.html             ← Charts + map + feedback form
+│   ├── data.json / data.js    ← Analytics snapshot
+│   └── status.json            ← Pipeline health
 ├── sql/
 │   ├── schema.sql
 │   └── queries.sql
@@ -973,13 +1075,14 @@ openflights-pipeline/          ← GitHub repo root
     │   ├── checks.yml
     │   └── run_checks.py
     ├── dashboard/
-    │   ├── export_snapshot.py
-    │   └── export_snapshot.py   ← SQL → JSON for dashboard
+    │   └── export_snapshot.py   ← SQL → JSON + status for dashboard
     ├── tests/
     │   ├── test_etl.py        ← 18 unit tests
     │   └── test_integration.py  ← 5 integration tests
     ├── scripts/
     │   ├── run_pipeline.ps1
+    │   ├── sync_dashboard_docs.py  ← Refresh docs/ without DB
+    │   ├── create_feedback_label.ps1
     │   └── setup_db.py
     ├── Makefile
     ├── Dockerfile
@@ -1088,13 +1191,14 @@ File: `sql/queries.sql`
 | **SQL** | CTEs, window functions, self-joins, EXPLAIN ANALYZE |
 | **Python ETL** | Parsers, batch load, FK integrity, error handling |
 | **PostgreSQL** | Schema design, indexes, 66k+ row warehouse |
-| **Data quality** | Soda Core — 8 declarative checks |
+| **Data quality** | Soda Core — 14 declarative checks |
 | **Testing** | 18 unit + 5 integration tests; pytest markers |
 | **Docker** | Dockerfile, multi-service compose, healthchecks |
-| **CI/CD** | GitHub Actions — CI, scheduled ETL, Pages deploy |
-| **Analytics / BI** | Live Chart.js dashboard on GitHub Pages |
-| **Documentation** | Phase-by-phase progression, rationale for every test |
-| **Operational thinking** | Scheduled pipeline, one-command scripts |
+| **CI/CD** | GitHub Actions — CI, scheduled ETL, Pages deploy, feedback setup |
+| **Analytics / BI** | Chart.js + Leaflet map on GitHub Pages |
+| **Documentation** | Phase-by-phase progression, audience guide, METADATA dictionary |
+| **Operational thinking** | Scheduled pipeline, status.json, one-command scripts |
+| **Portfolio / UX** | Visitor feedback, pipeline status bar, zero hosting cost |
 
 ---
 
@@ -1123,4 +1227,4 @@ If this project were deployed in a real organisation, these would be natural nex
 
 ---
 
-*Last updated: June 2026*
+*Last updated: August 2026*

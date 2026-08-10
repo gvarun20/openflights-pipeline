@@ -3,6 +3,12 @@
 > **Purpose of this file:** quick reference for what each table means in this **student demo project**.  
 > This is not enterprise data governance — just documentation so future-me (and markers/recruiters) know what I built.
 
+**Who is this for?**
+- **Non-technical readers:** read the table names and “Meaning” columns — ignore SQL types if unfamiliar.
+- **Technical readers:** use with [DOCUMENTATION.md](DOCUMENTATION.md) §7 (data model) and `sql/schema.sql`.
+
+**See also:** [README](README.md) (overview) · [live dashboard](https://gvarun20.github.io/openflights-pipeline/) (charts built from these tables)
+
 **Database name:** `openflights_dw`  
 **Schema style:** star schema (1 fact table + dimension tables)  
 **Row counts (after ETL):** ~66,316 routes · ~7,698 airports · ~6,162 airlines

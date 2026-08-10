@@ -34,7 +34,7 @@ Use this when preparing your **CV, LinkedIn, GitHub profile, and interviews**.
 | **Website** | https://gvarun20.github.io/openflights-pipeline/ |
 | **Topics** | `data-engineering` `postgresql` `python` `etl` `docker` `github-actions` `data-quality` `portfolio` |
 | **Pin repo** | Yes — on your profile |
-| **`feedback` label** | Create once (Issues → Labels) or run `scripts/create_feedback_label.ps1` |
+| **`feedback` label** | Auto-created by `setup-feedback.yml` workflow on push |
 | **Loom video** | Record 2 min demo, paste link in README |
 
 ---

@@ -11,9 +11,28 @@
 
 ## Live demo
 
-**Dashboard:** https://gvarun20.github.io/openflights-pipeline/ — scroll down for the **feedback box** (type your thoughts, then submit via GitHub).
+**Dashboard:** https://gvarun20.github.io/openflights-pipeline/
+
+| On the dashboard | What it shows |
+|------------------|---------------|
+| **Status bar** | Last export time, quality passed, route count, 14 data checks |
+| **Hub map** | 20 busiest airports worldwide (Leaflet + free map tiles) |
+| **Charts & tables** | Airlines, corridors, aircraft, domestic vs international |
+| **Feedback form** | Visitors type thoughts → submit as a GitHub Issue |
 
 **Repo:** https://github.com/gvarun20/openflights-pipeline
+
+---
+
+## Documentation — where to start
+
+| If you are… | Read this | Time |
+|-------------|-----------|------|
+| **Recruiter / non-technical** | This README + [live dashboard](https://gvarun20.github.io/openflights-pipeline/) | 5 min |
+| **MSc reviewer / classmate** | [METADATA.md](METADATA.md) (what each table means) + [How I built this](#how-i-built-this) below | 10 min |
+| **Technical interviewer** | [DOCUMENTATION.md](DOCUMENTATION.md) (full pipeline, CI, tests, quality) | 30 min |
+| **CV / LinkedIn** | [PORTFOLIO.md](PORTFOLIO.md) (copy-paste snippets + demo script) | 5 min |
+| **Docker / local run** | [DOCKER.md](openflights-pipeline/DOCKER.md) + [Quick start](#quick-start) below | 15 min |
 
 ---
 
@@ -30,10 +49,10 @@ A short walkthrough for recruiters and classmates — **£0 total cost**, everyt
 | 5 | Wrote **23 pytest tests** (unit + integration) | pytest |
 | 6 | Wrapped it in **Docker Compose** for one-command runs | Docker |
 | 7 | Automated test → ETL → quality → deploy in **GitHub Actions** | CI/CD |
-| 8 | Exported SQL metrics to JSON and built a **live dashboard** | Chart.js + Leaflet map |
+| 8 | Exported SQL metrics to JSON and built a **live dashboard** | Chart.js + Leaflet |
 | 9 | Added a **feedback form** so visitors can leave thoughts | GitHub Issues |
 
-**Design choice:** static GitHub Pages dashboard (not Streamlit) — fast, free, and easy to share in a CV link.
+**Design choice:** static GitHub Pages dashboard — fast, free, and easy to share in a CV link.
 
 **Honest scope:** demo-scale data (~66k routes), not a production airline platform.
 
@@ -48,13 +67,11 @@ A short walkthrough for recruiters and classmates — **£0 total cost**, everyt
 [![Demo video](https://img.shields.io/badge/▶_Watch-Loom_demo-625DF5?style=for-the-badge&logo=loom&logoColor=white)](YOUR_LOOM_URL)
 
 **Recording checklist (~2 min):**
-1. Open the [live dashboard](https://gvarun20.github.io/openflights-pipeline/) — show map, charts, status bar (20 sec)
+1. Open the [live dashboard](https://gvarun20.github.io/openflights-pipeline/) — status bar, map, charts (20 sec)
 2. Scroll to **Feedback** — explain visitors can leave comments via GitHub (15 sec)
-3. Open the [GitHub repo](https://github.com/gvarun20/openflights-pipeline) — point at green CI badge (20 sec)
+3. Open the [GitHub repo](https://github.com/gvarun20/openflights-pipeline) — green CI badge (20 sec)
 4. Quick peek: `etl/`, `quality/checks.yml`, `docs/index.html` (30 sec)
 5. Say it's an **MSc portfolio demo**, not live airline ops (10 sec)
-
-**After recording:** paste your Loom share link into `README.md` where it says `YOUR_LOOM_URL`.
 
 ---
 
@@ -63,7 +80,7 @@ A short walkthrough for recruiters and classmates — **£0 total cost**, everyt
 ![Architecture diagram](docs/architecture.png)
 
 → Column dictionary: **[METADATA.md](METADATA.md)**  
-→ Full notes: **[DOCUMENTATION.md](DOCUMENTATION.md)**
+→ Full technical reference: **[DOCUMENTATION.md](DOCUMENTATION.md)**
 
 ---
 
@@ -82,6 +99,7 @@ Public [OpenFlights](https://openflights.org/data.html) data → Python ETL → 
 | Routes loaded | 66,316 |
 | Tests | 23 |
 | Soda checks | 14 |
+| Map hubs shown | 20 |
 | Busiest hub | ATL |
 | Hosting cost | £0 |
 
@@ -94,6 +112,12 @@ cd openflights-pipeline
 .\scripts\run_pipeline.ps1
 ```
 
+Refresh dashboard files without a database:
+
+```powershell
+py openflights-pipeline/scripts/sync_dashboard_docs.py
+```
+
 **Docker:** see [DOCKER.md](openflights-pipeline/DOCKER.md)
 
 ---
@@ -102,23 +126,24 @@ cd openflights-pipeline
 
 | File | Purpose |
 |------|---------|
-| [METADATA.md](METADATA.md) | What each table/column means |
-| [PORTFOLIO.md](PORTFOLIO.md) | CV / LinkedIn snippets |
+| [DOCUMENTATION.md](DOCUMENTATION.md) | Complete technical + project documentation |
+| [METADATA.md](METADATA.md) | Table/column dictionary (non-technical friendly) |
+| [PORTFOLIO.md](PORTFOLIO.md) | CV / LinkedIn snippets and interview script |
 | [docs/GITHUB_PROFILE_README.md](docs/GITHUB_PROFILE_README.md) | GitHub profile README template |
 | Issue templates | Data bug · Enhancement · Dashboard feedback |
 
-**One-time setup (repo owner):** the **`feedback`** label is created automatically by `scripts/create_feedback_label.ps1` (or GitHub → Issues → Labels). Submit one test comment from the dashboard feedback form to verify the flow.
-
 ---
 
-## GitHub Actions status
+## GitHub Actions
 
 | Workflow | What it does |
 |----------|--------------|
-| **CI Pipeline** | Tests + ETL + quality + Docker — should be green |
-| **Deploy Dashboard** | Pushes `docs/` to `gh-pages` branch |
+| **CI Pipeline** | Tests + ETL + 14 Soda checks + Docker |
+| **Deploy Dashboard** | Publishes `docs/` to GitHub Pages |
+| **Scheduled Pipeline** | Weekly ETL → export → dashboard refresh |
+| **Setup dashboard feedback** | Creates `feedback` label + welcome issue (automatic) |
 
-**About the red badge:** If **CI Pipeline** and **Deploy Dashboard** are green, you are fine. A separate GitHub job called **"pages build and deployment"** (on the `gh-pages` branch) can fail even when the site is live — it is not your main CI. See [DOCUMENTATION.md](DOCUMENTATION.md#143-github-pages-setup-note).
+**About the red badge:** If **CI Pipeline** and **Deploy Dashboard** are green, you are fine. A separate **"pages build and deployment"** job on `gh-pages` can fail even when the site is live — see [DOCUMENTATION.md §14.3](DOCUMENTATION.md#143-github-pages-setup-note).
 
 ---
 
