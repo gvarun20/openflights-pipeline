@@ -24,8 +24,8 @@
 
 | Audience | Sections to read | Goal |
 |----------|------------------|------|
-| **Non-technical** (recruiter, manager) | §1, §2, §14, [README](README.md) | Understand the problem, outcome, and live demo |
-| **MSc reviewer / classmate** | §1–§3, §7, §14, [METADATA.md](METADATA.md) | Follow project progression and data model |
+| **Non-technical** (recruiter, manager) | [Why this project exists](#1-why-this-project-exists), [Project goals and scope](#2-project-goals-and-scope), [Dashboard and analytics delivery](#14-dashboard-and-analytics-delivery), [README](README.md) | Understand the problem, outcome, and live demo |
+| **MSc reviewer / classmate** | [Why this exists](#1-why-this-project-exists), [Goals & scope](#2-project-goals-and-scope), [Project phases](#3-how-the-project-progressed--phase-by-phase), [Data model](#7-data-model-star-schema), [Dashboard](#14-dashboard-and-analytics-delivery), [METADATA.md](METADATA.md) | Follow project progression and data model |
 | **Data engineer / developer** | Full document + `quality/checks.yml` + `tests/` | Reproduce, extend, or interview on implementation |
 | **Portfolio / CV** | [PORTFOLIO.md](PORTFOLIO.md) | Copy links and talking points |
 

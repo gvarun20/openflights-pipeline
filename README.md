@@ -143,7 +143,7 @@ py openflights-pipeline/scripts/sync_dashboard_docs.py
 | **Scheduled Pipeline** | Weekly ETL → export → dashboard refresh |
 | **Setup dashboard feedback** | Creates `feedback` label + welcome issue (automatic) |
 
-**About the red badge:** If **CI Pipeline** and **Deploy Dashboard** are green, you are fine. A separate **"pages build and deployment"** job on `gh-pages` can fail even when the site is live — see [DOCUMENTATION.md §14.3](DOCUMENTATION.md#143-github-pages-setup-note).
+**About the red badge:** If **CI Pipeline** and **Deploy Dashboard** are green, you are fine. A separate **"pages build and deployment"** job on `gh-pages` can fail even when the site is live — see [GitHub Pages setup note](DOCUMENTATION.md#145-github-pages-setup-note) in DOCUMENTATION.md.
 
 ---
 

@@ -5,7 +5,7 @@
 
 **Who is this for?**
 - **Non-technical readers:** read the table names and “Meaning” columns — ignore SQL types if unfamiliar.
-- **Technical readers:** use with [DOCUMENTATION.md](DOCUMENTATION.md) §7 (data model) and `sql/schema.sql`.
+- **Technical readers:** use with [Data model (Section 7)](DOCUMENTATION.md#7-data-model-star-schema) in DOCUMENTATION.md and `sql/schema.sql`.
 
 **See also:** [README](README.md) (overview) · [live dashboard](https://gvarun20.github.io/openflights-pipeline/) (charts built from these tables)
 
