@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-10",
+  "generated_at": "2026-08-17",
   "pipeline_status": {
-    "last_export_utc": "2026-08-10 07:14 UTC",
-    "generated_at": "2026-08-10",
+    "last_export_utc": "2026-08-17 06:36 UTC",
+    "generated_at": "2026-08-17",
     "quality_passed": true,
     "routes_loaded": 66316,
-    "soda_checks": 13,
+    "soda_checks": 14,
     "status": "healthy"
   },
   "kpis": {
@@ -119,40 +119,13 @@
       "routes": 903
     },
     {
-      "name": "Denver International Airport",
-      "city": "Denver",
-      "country": "United States",
-      "iata": "DEN",
-      "latitude": 39.861698,
-      "longitude": -104.672997,
-      "routes": 892
-    },
-    {
-      "name": "Istanbul Airport",
-      "city": "Istanbul",
-      "country": "Turkey",
-      "iata": "IST",
-      "latitude": 41.275278,
-      "longitude": 28.751944,
-      "routes": 887
-    },
-    {
-      "name": "Dubai International Airport",
-      "city": "Dubai",
-      "country": "United Arab Emirates",
-      "iata": "DXB",
-      "latitude": 25.252799,
-      "longitude": 55.364399,
-      "routes": 876
-    },
-    {
-      "name": "Hong Kong International Airport",
-      "city": "Hong Kong",
-      "country": "Hong Kong",
-      "iata": "HKG",
-      "latitude": 22.308901,
-      "longitude": 113.915001,
-      "routes": 870
+      "name": "Shanghai Pudong International Airport",
+      "city": "Shanghai",
+      "country": "China",
+      "iata": "PVG",
+      "latitude": 31.1434,
+      "longitude": 121.805,
+      "routes": 817
     },
     {
       "name": "Singapore Changi Airport",
@@ -161,25 +134,16 @@
       "iata": "SIN",
       "latitude": 1.35019,
       "longitude": 103.994003,
-      "routes": 865
+      "routes": 814
     },
     {
-      "name": "Adolfo Suárez Madrid–Barajas Airport",
-      "city": "Madrid",
+      "name": "Barcelona International Airport",
+      "city": "Barcelona",
       "country": "Spain",
-      "iata": "MAD",
-      "latitude": 40.471926,
-      "longitude": -3.56264,
-      "routes": 858
-    },
-    {
-      "name": "Suvarnabhumi Airport",
-      "city": "Bangkok",
-      "country": "Thailand",
-      "iata": "BKK",
-      "latitude": 13.6811,
-      "longitude": 100.747002,
-      "routes": 851
+      "iata": "BCN",
+      "latitude": 41.2971,
+      "longitude": 2.07846,
+      "routes": 782
     },
     {
       "name": "Incheon International Airport",
@@ -188,7 +152,25 @@
       "iata": "ICN",
       "latitude": 37.469101,
       "longitude": 126.450996,
-      "routes": 845
+      "routes": 736
+    },
+    {
+      "name": "Miami International Airport",
+      "city": "Miami",
+      "country": "United States",
+      "iata": "MIA",
+      "latitude": 25.7932,
+      "longitude": -80.290604,
+      "routes": 734
+    },
+    {
+      "name": "Denver International Airport",
+      "city": "Denver",
+      "country": "United States",
+      "iata": "DEN",
+      "latitude": 39.861698,
+      "longitude": -104.672997,
+      "routes": 733
     },
     {
       "name": "Munich Airport",
@@ -197,16 +179,34 @@
       "iata": "MUC",
       "latitude": 48.353802,
       "longitude": 11.7861,
-      "routes": 838
+      "routes": 728
     },
     {
-      "name": "Sydney Kingsford Smith International Airport",
-      "city": "Sydney",
-      "country": "Australia",
-      "iata": "SYD",
-      "latitude": -33.946098,
-      "longitude": 151.177002,
-      "routes": 832
+      "name": "Atat\u00fcrk International Airport",
+      "city": "Istanbul",
+      "country": "Turkey",
+      "iata": "ISL",
+      "latitude": 40.976898,
+      "longitude": 28.8146,
+      "routes": 711
+    },
+    {
+      "name": "London Gatwick Airport",
+      "city": "London",
+      "country": "United Kingdom",
+      "iata": "LGW",
+      "latitude": 51.148102,
+      "longitude": -0.190278,
+      "routes": 708
+    },
+    {
+      "name": "Hong Kong International Airport",
+      "city": "Hong Kong",
+      "country": "Hong Kong",
+      "iata": "HKG",
+      "latitude": 22.308901,
+      "longitude": 113.915001,
+      "routes": 708
     }
   ],
   "top_airlines": [
@@ -555,14 +555,14 @@
       "routes": 13
     },
     {
-      "from_iata": "CAN",
-      "to_iata": "HGH",
-      "from_city": "Guangzhou",
-      "to_city": "Hangzhou",
-      "from_lat": 23.392401,
-      "from_lon": 113.299004,
-      "to_lat": 30.2295,
-      "to_lon": 120.433998,
+      "from_iata": "JFK",
+      "to_iata": "LHR",
+      "from_city": "New York",
+      "to_city": "London",
+      "from_lat": 40.639801,
+      "from_lon": -73.7789,
+      "to_lat": 51.4706,
+      "to_lon": -0.461941,
       "routes": 12
     },
     {
@@ -577,14 +577,14 @@
       "routes": 12
     },
     {
-      "from_iata": "HKG",
-      "to_iata": "BKK",
-      "from_city": "Hong Kong",
-      "to_city": "Bangkok",
-      "from_lat": 22.308901,
-      "from_lon": 113.915001,
-      "to_lat": 13.6811,
-      "to_lon": 100.747002,
+      "from_iata": "MIA",
+      "to_iata": "ATL",
+      "from_city": "Miami",
+      "to_city": "Atlanta",
+      "from_lat": 25.7932,
+      "from_lon": -80.290604,
+      "to_lat": 33.6367,
+      "to_lon": -84.428101,
       "routes": 12
     },
     {
@@ -599,14 +599,25 @@
       "routes": 12
     },
     {
-      "from_iata": "JFK",
-      "to_iata": "LHR",
-      "from_city": "New York",
-      "to_city": "London",
-      "from_lat": 40.639801,
-      "from_lon": -73.7789,
-      "to_lat": 51.4706,
-      "to_lon": -0.461941,
+      "from_iata": "HKG",
+      "to_iata": "BKK",
+      "from_city": "Hong Kong",
+      "to_city": "Bangkok",
+      "from_lat": 22.308901,
+      "from_lon": 113.915001,
+      "to_lat": 13.6811,
+      "to_lon": 100.747002,
+      "routes": 12
+    },
+    {
+      "from_iata": "CAN",
+      "to_iata": "HGH",
+      "from_city": "Guangzhou",
+      "to_city": "Hangzhou",
+      "from_lat": 23.392401,
+      "from_lon": 113.299004,
+      "to_lat": 30.2295,
+      "to_lon": 120.433998,
       "routes": 12
     },
     {
@@ -629,17 +640,6 @@
       "from_lon": -84.428101,
       "to_lat": 25.7932,
       "to_lon": -80.290604,
-      "routes": 12
-    },
-    {
-      "from_iata": "BKK",
-      "to_iata": "HKG",
-      "from_city": "Bangkok",
-      "to_city": "Hong Kong",
-      "from_lat": 13.6811,
-      "from_lon": 100.747002,
-      "to_lat": 22.308901,
-      "to_lon": 113.915001,
       "routes": 12
     }
   ],
